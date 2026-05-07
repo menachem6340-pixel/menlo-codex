@@ -21,6 +21,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Skip when bundle is missing
+        run: |
+          if [ ! -f bundle/menlo-deploy.zip ]; then
+            echo "Bundle not found yet, skipping"
+            exit 0
+          fi
+
       - name: Expand Menlo bundle
         run: |
           rm -rf manelo
