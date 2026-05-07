@@ -1,0 +1,39 @@
+name: Expand Menlo Bundle
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - bundle/menlo-deploy.zip
+      - .github/workflows/expand-bundle.yml
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Expand Menlo bundle
+        run: |
+          rm -rf manelo
+          unzip -o bundle/menlo-deploy.zip -d .
+
+      - name: Commit expanded project
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manelo
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Expand Menlo bundle"
+          git push
