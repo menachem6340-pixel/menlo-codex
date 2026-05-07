@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 240" role="img" aria-labelledby="title desc">
+  <title id="title">מנלו בנייה</title>
+  <desc id="desc">לוגו מנלו בנייה</desc>
+  <rect width="720" height="240" fill="transparent"/>
+  <g transform="translate(560 28)">
+    <path d="M0 172C0 98 35 34 78 0c36 27 84 97 84 172 0 22-12 40-34 40H34C12 212 0 194 0 172Z" fill="#2B7FBF"/>
+    <path d="M48 170c0-47 17-91 47-127 21 18 43 45 57 82-25 26-46 57-60 91-28-1-44-18-44-46Z" fill="#1FA890"/>
+    <path d="M102 172c0-75 48-145 84-172 43 34 78 98 78 172 0 22-12 40-34 40h-94c-22 0-34-18-34-40Z" fill="#F5C842"/>
+  </g>
+  <g transform="translate(22 58)" fill="#3A3A3A">
+    <text x="0" y="104" font-size="118" font-weight="800" font-family="Arial, 'Segoe UI', sans-serif" direction="rtl">מנלו</text>
+    <text x="6" y="160" font-size="42" font-weight="500" font-family="Arial, 'Segoe UI', sans-serif" direction="rtl">בנייה</text>
+  </g>
+</svg>

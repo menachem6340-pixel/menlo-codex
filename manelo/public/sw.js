@@ -1,0 +1,71 @@
+const CACHE_NAME = "menlo-pwa-v3";
+const PRECACHE_URLS = [
+  "/",
+  "/manifest.json",
+  "/logo-icon.svg",
+  "/logo-circle.svg",
+  "/logo-full.svg"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .catch(() => undefined)
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  if (request.method !== "GET" || url.origin !== self.location.origin) {
+    return;
+  }
+
+  if (url.pathname.startsWith("/api/")) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  if (["script", "style", "image", "font", "manifest"].includes(request.destination)) {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(
+        () =>
+          new Response(
+            `<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>מנלו בנייה</title><body style="font-family:system-ui,sans-serif;margin:0;background:#fafafa;color:#1a1a1a"><main style="min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center"><div style="max-width:360px;border:1px solid #e5e5e5;background:white;border-radius:16px;padding:24px"><h1 style="margin:0 0 8px;font-size:22px">אין חיבור לשרת</h1><p style="margin:0;color:#666;line-height:1.5">בדוק שהשרת של מנלו פתוח במחשב ושהטלפון מחובר לאותה רשת Wi-Fi.</p></div></main></body></html>`,
+            { headers: { "Content-Type": "text/html; charset=utf-8" } }
+          )
+      )
+    );
+  }
+});
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  const fresh = fetch(request)
+    .then((response) => {
+      if (response.ok) cache.put(request, response.clone());
+      return response;
+    })
+    .catch(() => cached);
+
+  return cached || fresh;
+}
