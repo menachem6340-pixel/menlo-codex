@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# מנלו קודקס
 
-## Getting Started
+גרסת Codex הנפרדת של מערכת מנלו לקבלן בניין.
 
-First, run the development server:
+המטרה: אפליקציה אישית בעברית לניהול פרויקטים, תכניות, כתבי כמויות, הצעות מחיר, משימות, לקוחות, ספקים ו-Google Drive.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## כתובת ענן
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+https://menlo-codex.vercel.app
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## תשתיות
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js + React + Tailwind
+- Supabase נפרד לגרסת Codex
+- Google Drive לתיקיות וקבצים לפי פרויקט
+- PWA להתקנה בטלפון
+- Claude/Anthropic API לניתוח תכניות
 
-## Learn More
+## מסלולים חשובים
 
-To learn more about Next.js, take a look at the following resources:
+- `/dashboard` - מרכז עבודה
+- `/dashboard/projects` - פרויקטים
+- `/dashboard/plans` - תכניות
+- `/dashboard/boq` - כתבי כמויות
+- `/dashboard/quotes` - הצעות מחיר
+- `/dashboard/tasks` - משימות
+- `/dashboard/drive` - חיבור Google Drive
+- `/api/health` - בדיקת הגדרות ענן בלי חשיפת סודות
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## פריסה
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ב-Vercel:
 
-## Deploy on Vercel
+- Framework Preset: `Next.js`
+- Root Directory: `manelo`
+- Build Command: ברירת מחדל
+- Output Directory: ריק
+- Production domain: `menlo-codex.vercel.app`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+משתני סביבה לדוגמה נמצאים ב-`.env.production.example`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## כלל עבודה
+
+זו גרסה ראשית נפרדת מגרסת Claude. לא מעתיקים קוד מ-Claude אוטומטית ולא משנים את הפרויקט המקורי.
