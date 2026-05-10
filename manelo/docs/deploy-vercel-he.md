@@ -41,7 +41,13 @@
 4. לבחור את המאגר `menlo-codex`
 5. ללחוץ `Import`
 
-Vercel מזהה Next.js אוטומטית, אז בדרך כלל לא צריך לשנות הגדרות Build.
+ההגדרות החשובות ב-Vercel:
+
+- `Framework Preset` = `Next.js`
+- `Root Directory` = `manelo`
+- `Build Command` = ברירת מחדל
+- `Output Directory` = ריק
+- `Install Command` = ברירת מחדל
 
 ## שלב 4 - להגדיר Environment Variables ב-Vercel
 
@@ -61,28 +67,28 @@ GOOGLE_DRIVE_ROOT_FOLDER
 ### ערכים
 
 `NEXT_PUBLIC_SUPABASE_URL`
-הכתובת של Supabase החדש:
 
-`https://ookrfexrpqctbijwsals.supabase.co`
+```text
+https://ookrfexrpqctbijwsals.supabase.co
+```
 
 `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-המפתח הציבורי ששלחת
+המפתח הציבורי של Supabase Codex.
 
 `NEXT_PUBLIC_BASE_URL`
-בהתחלה אפשר לשים זמנית:
 
-`https://YOUR-VERCEL-DOMAIN.vercel.app`
-
-אחרי הפריסה, אם Vercel נתן כתובת אחרת, מעדכנים לערך המדויק.
+```text
+https://menlo-codex.vercel.app
+```
 
 `GOOGLE_REDIRECT_URI`
 
 ```text
-https://YOUR-VERCEL-DOMAIN.vercel.app/api/google-drive/callback
+https://menlo-codex.vercel.app/api/google-drive/callback
 ```
 
 שאר המשתנים:
-לפי הערכים שכבר קיימים אצלך ב-`.env.local`
+לפי הערכים שכבר קיימים אצלך ב-`.env.local`.
 
 ## שלב 5 - Deploy
 
@@ -98,7 +104,7 @@ https://YOUR-VERCEL-DOMAIN.vercel.app/api/google-drive/callback
 2. להוסיף ל-Authorized redirect URIs:
 
 ```text
-https://YOUR-VERCEL-DOMAIN.vercel.app/api/google-drive/callback
+https://menlo-codex.vercel.app/api/google-drive/callback
 ```
 
 אם רוצים להשאיר גם את הלוקאלי, אפשר להשאיר גם:
@@ -109,9 +115,12 @@ http://localhost:3001/api/google-drive/callback
 
 ## בדיקה אחרי העלייה
 
-1. לפתוח את האתר מהטלפון
-2. להתחבר
-3. ליצור משימה
-4. לשנות סטטוס
-5. להעלות תכנית
-6. לבדוק יצירת הצעת מחיר
+1. לפתוח:
+   `https://menlo-codex.vercel.app/api/health`
+2. לוודא שמופיע `ok: true`
+3. לפתוח את האתר מהטלפון
+4. להתחבר
+5. ליצור משימה
+6. לשנות סטטוס
+7. להעלות תכנית
+8. לבדוק יצירת הצעת מחיר
