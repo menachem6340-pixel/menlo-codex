@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { APP_BRAND_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -8,11 +9,11 @@ interface LogoProps {
 }
 
 /**
- * לוגו מנלו בנייה
+ * לוגו גרסת Codex
  *
  * variant="full"   - לוגו אופקי על רקע שקוף (לכותרת)
  * variant="circle" - לוגו עגול על רקע צהוב (למסך התחברות)
- * variant="icon"   - סמל M בלבד (לאייקונים)
+ * variant="icon"   - אייקון מרובע של לוגו החברה
  */
 export function Logo({ variant = "full", size = 64, className }: LogoProps) {
   const src =
@@ -30,7 +31,7 @@ export function Logo({ variant = "full", size = 64, className }: LogoProps) {
     <div className={cn("inline-flex items-center", className)}>
       <Image
         src={src}
-        alt="מנלו בנייה"
+        alt={APP_BRAND_NAME}
         width={width}
         height={height}
         priority
@@ -47,9 +48,9 @@ export function LogoText({ className }: { className?: string }) {
   return (
     <div className={cn("inline-flex items-baseline gap-2", className)}>
       <span className="text-3xl font-extrabold text-[var(--color-brand-dark)]">
-        מנלו
+        קודקס
       </span>
-      <span className="text-lg font-medium text-neutral-500">בנייה</span>
+      <span className="text-lg font-medium text-neutral-500">מנלו</span>
     </div>
   );
 }
