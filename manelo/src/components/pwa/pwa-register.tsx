@@ -7,8 +7,23 @@ export function PwaRegister() {
     if (!("serviceWorker" in navigator)) return;
     if (process.env.NODE_ENV !== "production") return;
 
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          registration.update().catch(() => undefined);
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+        })
+        .catch(() => undefined);
     });
   }, []);
 
