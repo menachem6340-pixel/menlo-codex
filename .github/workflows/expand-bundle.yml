@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - bundle/menlo-deploy.zip
+      - bundle/menlo-patch.zip.base64.txt
       - .github/workflows/expand-bundle.yml
 
 permissions:
@@ -21,19 +22,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Skip when bundle is missing
+      - name: Detect changed bundle
+        id: changed
         run: |
-          if [ ! -f bundle/menlo-deploy.zip ]; then
-            echo "Bundle not found yet, skipping"
-            exit 0
+          CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -qx "bundle/menlo-patch.zip.base64.txt"; then
+            echo "mode=patch" >> "$GITHUB_OUTPUT"
+          elif echo "$CHANGED" | grep -qx "bundle/menlo-deploy.zip"; then
+            echo "mode=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=skip" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Expand Menlo bundle
+      - name: Apply Menlo patch bundle
+        if: steps.changed.outputs.mode == 'patch'
+        run: |
+          base64 -d bundle/menlo-patch.zip.base64.txt > /tmp/menlo-patch.zip
+          unzip -o /tmp/menlo-patch.zip -d .
+
+      - name: Expand Menlo full bundle
+        if: steps.changed.outputs.mode == 'full'
         run: |
           rm -rf manelo
           unzip -o bundle/menlo-deploy.zip -d .
 
       - name: Commit expanded project
+        if: steps.changed.outputs.mode != 'skip'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
