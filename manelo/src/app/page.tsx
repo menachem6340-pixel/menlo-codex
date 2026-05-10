@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { APP_BRAND_NAME, APP_BRAND_TAGLINE } from "@/lib/brand";
 import {
   FileText,
   Calculator,
@@ -47,23 +48,33 @@ export default function HomePage() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[var(--color-brand-yellow)]/30 via-white to-[var(--color-brand-blue)]/15 px-4 py-16 sm:py-24">
+      <section className="bg-gradient-to-br from-[var(--color-brand-yellow)]/30 via-white to-[var(--color-brand-blue)]/15 px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-5xl text-center">
-          <Image
-            src="/logo-full.svg"
-            alt="מנלו בנייה"
-            width={320}
-            height={128}
-            priority
-            className="object-contain mx-auto mb-6"
-          />
+          <div className="mb-7 inline-flex flex-col items-center gap-3 sm:flex-row-reverse sm:gap-4">
+            <Image
+              src="/logo-icon.svg"
+              alt=""
+              width={92}
+              height={92}
+              priority
+              className="h-20 w-20 object-contain sm:h-24 sm:w-24"
+            />
+            <div className="text-center sm:text-right">
+              <p className="text-3xl font-extrabold text-[var(--color-brand-dark)] sm:text-4xl">
+                {APP_BRAND_NAME}
+              </p>
+              <p className="mt-1 text-sm font-medium text-neutral-500 sm:text-base">
+                {APP_BRAND_TAGLINE}
+              </p>
+            </div>
+          </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-[var(--color-brand-dark)] mb-4 leading-tight">
             כל העסק שלך,
             <br />
             במקום אחד
           </h1>
           <p className="mx-auto max-w-2xl text-lg sm:text-xl text-neutral-600 mb-8">
-            מערכת ניהול חכמה לקבלני בניין - מתכנית ועד חשבונית. AI שמנתח
+            {APP_BRAND_TAGLINE} חכמה - מתכנית ועד חשבונית. AI שמנתח
             תכניות, מחשב כמויות, מפיק הצעות מחיר מקצועיות.
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
@@ -110,7 +121,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-neutral-200 py-8 px-4 text-center text-sm text-neutral-500">
-        © {new Date().getFullYear()} מנלו בנייה - כל הזכויות שמורות
+        © {new Date().getFullYear()} {APP_BRAND_NAME} - כל הזכויות שמורות
       </footer>
     </main>
   );
