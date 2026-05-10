@@ -1,9 +1,9 @@
 {
-  "name": "מנלו בנייה",
-  "short_name": "מנלו",
+  "name": "מנלו קודקס",
+  "short_name": "קודקס",
   "description": "אפליקציה אישית לקבלן בניין - פרויקטים, תכניות, כתבי כמויות והצעות מחיר",
-  "id": "/dashboard",
-  "start_url": "/dashboard",
+  "id": "/?app=menlo-codex",
+  "start_url": "/dashboard?source=pwa",
   "scope": "/",
   "lang": "he",
   "dir": "rtl",
