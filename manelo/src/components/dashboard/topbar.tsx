@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LogOut, Menu } from "lucide-react";
 import { MobileMenu } from "@/components/dashboard/mobile-menu";
+import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
 
 interface TopBarProps {
   profile: {
@@ -40,13 +40,10 @@ export function TopBar({ profile, userEmail }: TopBarProps) {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <Image
-            src="/logo-icon.svg"
-            alt="מנלו בנייה"
-            width={34}
-            height={34}
-            priority
-            className="lg:hidden rounded-lg"
+          <img
+            src={APP_LOGO_ICON}
+            alt={APP_BRAND_NAME}
+            className="h-8 w-8 shrink-0 rounded-lg object-contain lg:hidden"
           />
           <div className="min-w-0">
             <div className="font-medium text-sm truncate">
