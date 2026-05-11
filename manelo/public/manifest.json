@@ -15,13 +15,13 @@
   "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/logo-icon.svg",
+      "src": "/logo-icon.svg?v=2026-05-11-5",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/logo-circle.svg",
+      "src": "/logo-icon.svg?v=2026-05-11-5",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
@@ -32,19 +32,19 @@
       "name": "פרויקטים",
       "short_name": "פרויקטים",
       "url": "/dashboard/projects",
-      "icons": [{ "src": "/logo-icon.svg", "sizes": "512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/logo-icon.svg?v=2026-05-11-5", "sizes": "512x512", "type": "image/svg+xml" }]
     },
     {
       "name": "כתבי כמויות",
       "short_name": "כמויות",
       "url": "/dashboard/boq",
-      "icons": [{ "src": "/logo-icon.svg", "sizes": "512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/logo-icon.svg?v=2026-05-11-5", "sizes": "512x512", "type": "image/svg+xml" }]
     },
     {
       "name": "הצעות מחיר",
       "short_name": "הצעות",
       "url": "/dashboard/quotes",
-      "icons": [{ "src": "/logo-icon.svg", "sizes": "512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/logo-icon.svg?v=2026-05-11-5", "sizes": "512x512", "type": "image/svg+xml" }]
     }
   ]
 }
