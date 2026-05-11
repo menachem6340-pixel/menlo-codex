@@ -7,6 +7,7 @@ on:
     paths:
       - bundle/menlo-deploy.zip
       - bundle/menlo-patch.zip.base64.txt
+      - bundle/menlo-patch.marker.txt
       - .github/workflows/expand-bundle.yml
 
 permissions:
@@ -27,7 +28,9 @@ jobs:
         run: |
           CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
           echo "$CHANGED"
-          if echo "$CHANGED" | grep -qx "bundle/menlo-patch.zip.base64.txt"; then
+          if echo "$CHANGED" | grep -qx "bundle/menlo-patch.marker.txt"; then
+            echo "mode=chunked-patch" >> "$GITHUB_OUTPUT"
+          elif echo "$CHANGED" | grep -qx "bundle/menlo-patch.zip.base64.txt"; then
             echo "mode=patch" >> "$GITHUB_OUTPUT"
           elif echo "$CHANGED" | grep -qx "bundle/menlo-deploy.zip"; then
             echo "mode=full" >> "$GITHUB_OUTPUT"
@@ -39,6 +42,18 @@ jobs:
         if: steps.changed.outputs.mode == 'patch'
         run: |
           base64 -d bundle/menlo-patch.zip.base64.txt > /tmp/menlo-patch.zip
+          unzip -o /tmp/menlo-patch.zip -d .
+
+      - name: Apply chunked Menlo patch bundle
+        if: steps.changed.outputs.mode == 'chunked-patch'
+        run: |
+          PATCH_DIR="$(tr -d '\r\n' < bundle/menlo-patch.marker.txt)"
+          case "$PATCH_DIR" in
+            bundle/*) ;;
+            *) echo "Invalid patch directory: $PATCH_DIR"; exit 1 ;;
+          esac
+          test -d "$PATCH_DIR"
+          cat "$PATCH_DIR"/part-*.txt | base64 -d > /tmp/menlo-patch.zip
           unzip -o /tmp/menlo-patch.zip -d .
 
       - name: Expand Menlo full bundle
