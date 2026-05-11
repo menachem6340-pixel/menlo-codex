@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { PwaRegister } from "@/components/pwa/pwa-register";
-import { APP_BRAND_NAME, APP_BRAND_SHORT_NAME, APP_BRAND_TAGLINE } from "@/lib/brand";
+import {
+  APP_BRAND_NAME,
+  APP_BRAND_SHORT_NAME,
+  APP_BRAND_TAGLINE,
+  APP_LOGO_CIRCLE,
+  APP_LOGO_ICON,
+} from "@/lib/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,8 +20,8 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: "/logo-icon.svg",
-    apple: "/logo-icon.svg",
+    icon: APP_LOGO_ICON,
+    apple: APP_LOGO_CIRCLE,
   },
 };
 
