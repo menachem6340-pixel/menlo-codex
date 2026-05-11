@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { APP_BRAND_NAME, APP_BRAND_TAGLINE, APP_LOGO_ICON } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,16 +42,15 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white p-8 shadow-xl border border-neutral-200">
           <div className="mb-8 flex flex-col items-center text-center">
-            <Image
-              src="/logo-full.svg"
-              alt="מנלו בנייה"
-              width={220}
-              height={88}
-              priority
-              className="object-contain mb-2"
+            <img
+              src={APP_LOGO_ICON}
+              alt={APP_BRAND_NAME}
+              width={128}
+              height={128}
+              className="mb-3 h-28 w-28 object-contain"
             />
             <p className="text-sm text-neutral-500">
-              מערכת ניהול לקבלני בניין
+              {APP_BRAND_TAGLINE}
             </p>
           </div>
 
@@ -102,7 +101,7 @@ export default function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-neutral-400">
-          © {new Date().getFullYear()} מנלו בנייה - כל הזכויות שמורות
+          © {new Date().getFullYear()} {APP_BRAND_NAME} - כל הזכויות שמורות
         </p>
       </div>
     </main>
