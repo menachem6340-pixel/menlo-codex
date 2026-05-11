@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { dashboardNavItems } from "@/lib/dashboard/nav";
+import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
 
 interface MobileMenuProps {
   open: boolean;
@@ -35,13 +35,10 @@ export function MobileMenu({ open, onClose, profile, userEmail }: MobileMenuProp
       <aside className="absolute inset-y-0 right-0 flex w-[min(92vw,380px)] flex-col bg-white shadow-2xl">
         <div className="border-b border-neutral-200 px-4 py-4">
           <div className="flex items-center justify-between gap-3">
-            <Image
-              src="/logo-full.svg"
-              alt="מנלו בנייה"
-              width={126}
-              height={48}
-              priority
-              className="object-contain"
+            <img
+              src={APP_LOGO_ICON}
+              alt={APP_BRAND_NAME}
+              className="h-14 w-14 rounded-lg object-contain"
             />
             <Button variant="ghost" size="sm" onClick={onClose} aria-label="סגור תפריט">
               <X className="h-5 w-5" />
