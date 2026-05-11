@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { dashboardNavItems } from "@/lib/dashboard/nav";
+import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
 
 interface SidebarProps {
   profile: {
@@ -18,15 +18,11 @@ export function Sidebar({ profile }: SidebarProps) {
 
   return (
     <aside className="hidden lg:flex w-64 flex-col bg-white border-l border-neutral-200">
-      {/* Logo */}
       <div className="h-20 flex items-center gap-3 px-4 border-b border-neutral-200">
-        <Image
-          src="/logo-full.svg"
-          alt="מנלו בנייה"
-          width={120}
-          height={48}
-          priority
-          className="object-contain shrink-0"
+        <img
+          src={APP_LOGO_ICON}
+          alt={APP_BRAND_NAME}
+          className="h-12 w-12 shrink-0 rounded-lg object-contain"
         />
         <div className="flex-1 min-w-0 border-r border-neutral-200 pr-3">
           <div className="text-xs text-neutral-500 truncate">
@@ -38,7 +34,6 @@ export function Sidebar({ profile }: SidebarProps) {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
         {dashboardNavItems.map((item) => {
           const isActive =
