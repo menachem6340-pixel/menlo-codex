@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -68,13 +68,12 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white p-8 shadow-xl border border-neutral-200">
           <div className="mb-6 flex flex-col items-center text-center">
-            <Image
-              src="/logo-full.svg"
-              alt="מנלו בנייה"
-              width={180}
-              height={72}
-              priority
-              className="object-contain mb-1"
+            <img
+              src={APP_LOGO_ICON}
+              alt={APP_BRAND_NAME}
+              width={120}
+              height={120}
+              className="mb-2 h-24 w-24 object-contain"
             />
             <p className="text-sm text-neutral-500">
               הרשמה חדשה - 30 שניות וסיימנו
@@ -95,7 +94,7 @@ export default function SignupPage() {
               label="שם העסק"
               type="text"
               required
-              placeholder="לדוגמא: מנלו בנייה"
+              placeholder={`לדוגמא: ${APP_BRAND_NAME}`}
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
             />
