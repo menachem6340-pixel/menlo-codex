@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: APP_ICON_512,
-    apple: APP_ICON_MASKABLE,
+    icon: [{ url: `${APP_ICON_512}?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" }],
+    apple: [{ url: `${APP_ICON_MASKABLE}?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" }],
   },
 };
 
