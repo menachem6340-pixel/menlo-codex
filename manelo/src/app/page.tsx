@@ -52,12 +52,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl text-center">
           <div className="mb-7 inline-flex flex-col items-center gap-3 sm:flex-row-reverse sm:gap-4">
             <Image
-              src="/logo-icon.svg"
-              alt=""
-              width={92}
-              height={92}
+              src="/logo-full.svg"
+              alt="מנלו בנייה"
+              width={260}
+              height={98}
               priority
-              className="h-20 w-20 object-contain sm:h-24 sm:w-24"
+              className="h-auto w-56 max-w-full object-contain sm:w-64"
             />
             <div className="text-center sm:text-right">
               <p className="text-3xl font-extrabold text-[var(--color-brand-dark)] sm:text-4xl">
