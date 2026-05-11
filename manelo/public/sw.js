@@ -2,8 +2,7 @@ const CACHE_NAME = "manelo-codex-pwa-2026-05-11-5";
 const PRECACHE_URLS = [
   "/",
   "/manifest.json",
-  "/logo-icon.svg?v=2026-05-11-5",
-  "/favicon.png"
+  "/logo-icon.svg?v=2026-05-11-5"
 ];
 
 self.addEventListener("install", (event) => {
