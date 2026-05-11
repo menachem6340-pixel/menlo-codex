@@ -1,0 +1,489 @@
+name: Codex PWA Upload AI Hotfix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/codex-hotfix-pwa-upload-ai.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Apply Codex hotfix
+        shell: python
+        run: |
+          from pathlib import Path
+
+          ROOT = Path('manelo')
+
+          def read(path):
+              return Path(path).read_text(encoding='utf-8')
+
+          def write(path, content):
+              p = Path(path)
+              p.parent.mkdir(parents=True, exist_ok=True)
+              p.write_text(content, encoding='utf-8', newline='\n')
+              print('wrote', path)
+
+          def patch(path, fn):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              new = fn(text)
+              if new != text:
+                  p.write_text(new, encoding='utf-8', newline='\n')
+                  print('patched', path)
+              else:
+                  print('unchanged', path)
+
+          def replace(text, old, new):
+              if new in text:
+                  return text
+              if old not in text:
+                  raise SystemExit(f'Missing expected text: {old[:120]!r}')
+              return text.replace(old, new, 1)
+
+          write(ROOT / 'src/lib/brand.ts', '''export const APP_BRAND_NAME = "מנלו קודקס";
+          export const APP_BRAND_SHORT_NAME = "קודקס";
+          export const APP_BRAND_TAGLINE = "מערכת ניהול לקבלן בניין";
+          export const APP_DEFAULT_ORG_NAME = "מנלו בנייה";
+          export const APP_DRIVE_ROOT_FOLDER = "מנלו בנייה";
+          export const APP_PRODUCTION_URL = "https://menlo-codex.vercel.app";
+          export const APP_ASSET_VERSION = "2026-05-11-8";
+          export const APP_PWA_CACHE_VERSION = APP_ASSET_VERSION;
+          export const APP_INSTALL_ID = "/?app=menlo-codex-v2";
+
+          export const APP_ICON_192 = "/generated-app-icon-192.png";
+          export const APP_ICON_512 = "/generated-app-icon-512.png";
+          export const APP_ICON_MASKABLE = "/generated-app-icon-maskable-512.png";
+
+          export const APP_ICON_192_VERSIONED = `${APP_ICON_192}?v=${APP_ASSET_VERSION}`;
+          export const APP_ICON_512_VERSIONED = `${APP_ICON_512}?v=${APP_ASSET_VERSION}`;
+          export const APP_ICON_MASKABLE_VERSIONED = `${APP_ICON_MASKABLE}?v=${APP_ASSET_VERSION}`;
+
+          export const APP_LOGO_FULL = APP_ICON_512_VERSIONED;
+          export const APP_LOGO_ICON = APP_ICON_512_VERSIONED;
+          export const APP_LOGO_CIRCLE = APP_ICON_512_VERSIONED;
+          export const APP_LOGO_MARK = APP_ICON_192_VERSIONED;
+          '''.replace('          ', ''))
+
+          write(ROOT / 'public/manifest.json', '''{
+            "name": "מנלו קודקס",
+            "short_name": "קודקס",
+            "description": "אפליקציה אישית לקבלן בניין - פרויקטים, תכניות, כתבי כמויות והצעות מחיר",
+            "id": "/?app=menlo-codex-v2",
+            "start_url": "/dashboard?source=pwa&v=2026-05-11-8",
+            "scope": "/",
+            "lang": "he",
+            "dir": "rtl",
+            "display": "standalone",
+            "display_override": ["standalone", "minimal-ui", "browser"],
+            "orientation": "portrait",
+            "background_color": "#FAFAFA",
+            "theme_color": "#F5C842",
+            "categories": ["business", "productivity", "utilities"],
+            "icons": [
+              {
+                "src": "/generated-app-icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any"
+              },
+              {
+                "src": "/generated-app-icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+              },
+              {
+                "src": "/generated-app-icon-maskable-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "maskable"
+              }
+            ],
+            "shortcuts": [
+              {
+                "name": "פרויקטים",
+                "short_name": "פרויקטים",
+                "url": "/dashboard/projects",
+                "icons": [{ "src": "/generated-app-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+              },
+              {
+                "name": "כתבי כמויות",
+                "short_name": "כמויות",
+                "url": "/dashboard/boq",
+                "icons": [{ "src": "/generated-app-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+              },
+              {
+                "name": "הצעות מחיר",
+                "short_name": "הצעות",
+                "url": "/dashboard/quotes",
+                "icons": [{ "src": "/generated-app-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+              }
+            ],
+            "prefer_related_applications": false
+          }
+          '''.replace('          ', ''))
+
+          write(ROOT / 'public/sw.js', '''const CACHE_NAME = "manelo-codex-pwa-2026-05-11-8";
+          const PRECACHE_URLS = [
+            "/",
+            "/manifest.json?v=2026-05-11-8",
+            "/generated-app-icon-192.png",
+            "/generated-app-icon-512.png",
+            "/generated-app-icon-maskable-512.png"
+          ];
+
+          self.addEventListener("install", (event) => {
+            event.waitUntil(
+              caches
+                .open(CACHE_NAME)
+                .then((cache) => cache.addAll(PRECACHE_URLS))
+                .catch(() => undefined)
+            );
+            self.skipWaiting();
+          });
+
+          self.addEventListener("activate", (event) => {
+            event.waitUntil(
+              caches
+                .keys()
+                .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+                .then(() => self.clients.claim())
+            );
+          });
+
+          self.addEventListener("message", (event) => {
+            if (event.data?.type === "SKIP_WAITING") {
+              self.skipWaiting();
+            }
+          });
+
+          self.addEventListener("fetch", (event) => {
+            const request = event.request;
+            const url = new URL(request.url);
+
+            if (request.method !== "GET" || url.origin !== self.location.origin) {
+              return;
+            }
+
+            if (url.pathname.startsWith("/api/")) {
+              event.respondWith(fetch(request));
+              return;
+            }
+
+            if (["script", "style", "image", "font", "manifest"].includes(request.destination)) {
+              event.respondWith(staleWhileRevalidate(request));
+              return;
+            }
+
+            if (request.mode === "navigate") {
+              event.respondWith(
+                fetch(request).catch(() => offlineResponse())
+              );
+            }
+          });
+
+          async function staleWhileRevalidate(request) {
+            const cache = await caches.open(CACHE_NAME);
+            const cached = await cache.match(request);
+            const fresh = fetch(request)
+              .then((response) => {
+                if (response.ok) cache.put(request, response.clone());
+                return response;
+              })
+              .catch(() => cached);
+
+            return cached || fresh;
+          }
+
+          function offlineResponse() {
+            return new Response(
+              `<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>מנלו קודקס</title><body style="font-family:system-ui,sans-serif;margin:0;background:#fafafa;color:#1a1a1a"><main style="min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center"><div style="max-width:380px;border:1px solid #e5e5e5;background:white;border-radius:14px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.06)"><img src="/generated-app-icon-192.png" alt="" width="64" height="64" style="margin-bottom:12px"><h1 style="margin:0 0 8px;font-size:22px">אין חיבור למנלו קודקס</h1><p style="margin:0;color:#666;line-height:1.5">בדוק שהאינטרנט זמין, ואז רענן. אם אתה עובד מקומית, ודא שהשרת פתוח.</p></div></main></body></html>`,
+              { headers: { "Content-Type": "text/html; charset=utf-8" } }
+            );
+          }
+          '''.replace('          ', ''))
+
+          write(ROOT / 'src/lib/env.ts', '''export function getAnthropicKey(): string | undefined {
+            const key = process.env.ANTHROPIC_API_KEY?.trim();
+            return key || undefined;
+          }
+
+          export function hasValidAnthropicKeyFormat(key: string | undefined): key is string {
+            return Boolean(key && key.startsWith("sk-ant-") && key.length > 20);
+          }
+          '''.replace('          ', ''))
+
+          write(ROOT / 'src/lib/ai/errors.ts', '''export const ANTHROPIC_KEY_ERROR =
+            "מפתח ה-AI של Anthropic לא תקין או חסר. צריך להגדיר ב-Vercel משתנה בשם ANTHROPIC_API_KEY שמתחיל ב-sk-ant-, ואז לבצע Deploy מחדש.";
+
+          export function formatAiError(error: unknown): string {
+            const message =
+              error instanceof Error
+                ? error.message
+                : typeof error === "string"
+                  ? error
+                  : JSON.stringify(error);
+
+            if (/invalid x-api-key|authentication_error|x-api|401|api key/i.test(message)) {
+              return ANTHROPIC_KEY_ERROR;
+            }
+
+            if (/credit|billing|quota|rate limit|overloaded/i.test(message)) {
+              return "שירות ה-AI לא זמין כרגע בגלל מגבלת שימוש, חיוב או עומס. נסה שוב בעוד כמה דקות או בדוק את חשבון Anthropic.";
+            }
+
+            if (/Failed to fetch file|fetch/i.test(message)) {
+              return "לא הצלחתי לקרוא את קובץ התכנית מהאחסון. בדוק שהקובץ עלה תקין ונסה שוב.";
+            }
+
+            return "ניתוח ה-AI נכשל. נסה שוב, ואם זה חוזר בדוק שהקובץ תקין ושמפתח ה-AI מוגדר נכון.";
+          }
+          '''.replace('          ', ''))
+
+          write(ROOT / 'src/lib/storage/safe-path.ts', '''const MIME_EXTENSIONS: Record<string, string> = {
+            "application/pdf": "pdf",
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp",
+            "image/gif": "gif",
+            "video/mp4": "mp4",
+            "audio/mpeg": "mp3",
+            "audio/mp4": "m4a",
+            "audio/webm": "webm",
+          };
+
+          export function fileExtensionFromNameOrType(name?: string, mimeType?: string): string {
+            const fromName = name?.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
+            if (fromName && fromName.length <= 10) return fromName;
+            return (mimeType && MIME_EXTENSIONS[mimeType]) || "bin";
+          }
+
+          export function uniqueStorageFileName(originalName?: string, mimeType?: string): string {
+            const ext = fileExtensionFromNameOrType(originalName, mimeType);
+            const now = Date.now();
+            const random = Math.random().toString(36).slice(2, 10);
+            return `${now}-${random}.${ext}`;
+          }
+
+          export function formatStorageError(message: string): string {
+            if (/invalid key/i.test(message)) {
+              return "שם הקובץ לא היה תקין לאחסון. תיקנתי את זה לשמות פנימיים בטוחים; נסה להעלות שוב.";
+            }
+
+            if (/bucket|not found/i.test(message)) {
+              return "לא נמצא אזור אחסון לקבצים. בדוק שב-Supabase קיים bucket בשם PLANS.";
+            }
+
+            return message;
+          }
+          '''.replace('          ', ''))
+
+          write(ROOT / 'src/components/pwa/install-app-button.tsx', '''"use client";
+
+          import { useEffect, useState } from "react";
+          import { Download, Smartphone } from "lucide-react";
+          import { Button } from "@/components/ui/button";
+          import { cn } from "@/lib/utils";
+
+          type BeforeInstallPromptEvent = Event & {
+            prompt: () => Promise<void>;
+            userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+          };
+
+          export function InstallAppButton({ className }: { className?: string }) {
+            const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+            const [isStandalone, setIsStandalone] = useState(false);
+            const [showHelp, setShowHelp] = useState(false);
+
+            useEffect(() => {
+              const standalone =
+                window.matchMedia("(display-mode: standalone)").matches ||
+                Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+              setIsStandalone(standalone);
+
+              const onBeforeInstallPrompt = (event: Event) => {
+                event.preventDefault();
+                setInstallPrompt(event as BeforeInstallPromptEvent);
+              };
+
+              const onInstalled = () => {
+                setIsStandalone(true);
+                setInstallPrompt(null);
+                setShowHelp(false);
+              };
+
+              window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+              window.addEventListener("appinstalled", onInstalled);
+
+              return () => {
+                window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+                window.removeEventListener("appinstalled", onInstalled);
+              };
+            }, []);
+
+            if (isStandalone) return null;
+
+            async function handleInstall() {
+              if (!installPrompt) {
+                setShowHelp((value) => !value);
+                return;
+              }
+
+              await installPrompt.prompt();
+              await installPrompt.userChoice.catch(() => undefined);
+              setInstallPrompt(null);
+            }
+
+            return (
+              <div className={cn("relative inline-flex flex-col items-center", className)}>
+                <Button type="button" size="lg" variant="outline" className="text-base" onClick={handleInstall}>
+                  <Download className="h-4 w-4" />
+                  התקן כאפליקציה
+                </Button>
+
+                {showHelp && (
+                  <div className="absolute top-full z-20 mt-3 w-72 rounded-xl border border-neutral-200 bg-white p-4 text-right text-sm text-neutral-700 shadow-xl">
+                    <div className="mb-2 flex items-center gap-2 font-semibold text-neutral-900">
+                      <Smartphone className="h-4 w-4 text-[var(--color-brand-blue)]" />
+                      התקנה בטלפון
+                    </div>
+                    <p className="leading-6">
+                      בכרום בטלפון לחץ על התפריט של הדפדפן, ואז בחר
+                      {" "}
+                      <strong>הוסף למסך הבית</strong>
+                      {" "}
+                      או
+                      {" "}
+                      <strong>Install app</strong>.
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          }
+          '''.replace('          ', ''))
+
+          patch(ROOT / 'src/app/layout.tsx', lambda text: replace(
+              text,
+              '''  icons: {
+              icon: APP_ICON_512,
+              apple: APP_ICON_MASKABLE,
+            },'''.replace('              ', ''),
+              '''  icons: {
+              icon: [{ url: `${APP_ICON_512}?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" }],
+              apple: [{ url: `${APP_ICON_MASKABLE}?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" }],
+            },'''.replace('              ', '')
+          ))
+
+          def patch_page(text):
+              text = replace(text, 'import { Button } from "@/components/ui/button";\n', 'import { Button } from "@/components/ui/button";\nimport { InstallAppButton } from "@/components/pwa/install-app-button";\n')
+              text = replace(text, '''            <img
+              src={APP_LOGO_ICON}
+              alt="מנלו בנייה"
+              width={128}
+              height={128}
+              className="h-28 w-28 object-contain sm:h-32 sm:w-32"
+            />''', '''            <div
+              role="img"
+              aria-label="מנלו בנייה"
+              className="h-28 w-28 shrink-0 rounded-[24px] bg-contain bg-center bg-no-repeat sm:h-32 sm:w-32"
+              style={{ backgroundImage: `url("${APP_LOGO_ICON}")` }}
+            />''')
+              text = replace(text, '''            </Link>
+          </div>''', '''            </Link>
+            <InstallAppButton />
+          </div>''')
+              return text
+          patch(ROOT / 'src/app/page.tsx', patch_page)
+
+          def patch_upload(text):
+              text = replace(text, 'import { CATEGORIES, detectCategoryFromFilename, type PlanCategory } from "@/lib/plans/categories";\n', 'import { CATEGORIES, detectCategoryFromFilename, type PlanCategory } from "@/lib/plans/categories";\nimport {\n  fileExtensionFromNameOrType,\n  formatStorageError,\n  uniqueStorageFileName,\n} from "@/lib/storage/safe-path";\n')
+              text = replace(text, '          ext = fileBlob.type.includes("pdf") ? "pdf" : "jpg";', '          ext = fileExtensionFromNameOrType(item.name, fileBlob.type);')
+              text = replace(text, '          ext = item.file.name.split(".").pop()?.toLowerCase() || "pdf";', '          ext = fileExtensionFromNameOrType(item.file.name, item.file.type);')
+              text = replace(text, '''        const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const path = `${profile!.organization_id}/${projectId}/${safeName}`;''', '''        const originalName = item.file?.name || item.name || `plan.${ext}`;
+        const safeName = uniqueStorageFileName(originalName, fileBlob.type);
+        const path = `${profile!.organization_id}/${projectId}/plans/${safeName}`;''')
+              text = replace(text, '        if (uploadErr) throw new Error(uploadErr.message);', '        if (uploadErr) throw new Error(formatStorageError(uploadErr.message));')
+              return text
+          patch(ROOT / 'src/app/dashboard/projects/[id]/plans/upload/page.tsx', patch_upload)
+
+          def patch_tasks(text):
+              text = replace(text, 'import { PROJECT_STAGES } from "@/lib/tasks/templates";\n', 'import { PROJECT_STAGES } from "@/lib/tasks/templates";\nimport { formatStorageError, uniqueStorageFileName } from "@/lib/storage/safe-path";\n')
+              text = text.replace('''function safeFileName(name: string) {
+  return name
+    .replace(/[^\w.\-\u0590-\u05ff]+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80);
+}
+
+''', '')
+              text = replace(text, '        const path = `${organizationId}/task-photos/${task.id}/${file.lastModified}-${index}-${safeFileName(file.name)}`;', '        const safeName = uniqueStorageFileName(file.name, file.type);\n        const path = `${organizationId}/tasks/${task.id}/${index}-${safeName}`;')
+              text = replace(text, '        if (uploadError) throw new Error(uploadError.message);', '        if (uploadError) throw new Error(formatStorageError(uploadError.message));')
+              return text
+          patch(ROOT / 'src/components/tasks/tasks-manager.tsx', patch_tasks)
+
+          def patch_analyze(text):
+              text = replace(text, 'import { getAnthropicKey } from "@/lib/env";', 'import { ANTHROPIC_KEY_ERROR, formatAiError } from "@/lib/ai/errors";\nimport { getAnthropicKey, hasValidAnthropicKeyFormat } from "@/lib/env";')
+              text = replace(text, '    if (!apiKey) {', '    if (!hasValidAnthropicKeyFormat(apiKey)) {')
+              text = replace(text, '''        {
+          error:
+            "מפתח ה-AI לא מוגדר. הוסף ANTHROPIC_API_KEY ל-.env.local והפעל מחדש את השרת.",
+        },''', '        { error: ANTHROPIC_KEY_ERROR },')
+              text = replace(text, '      const errMsg = e instanceof Error ? e.message : "Unknown error";', '      const errMsg = formatAiError(e);')
+              text = replace(text, '      return NextResponse.json({ error: `שגיאת AI: ${errMsg}` }, { status: 500 });', '      return NextResponse.json({ error: errMsg }, { status: 500 });')
+              text = replace(text, '      { error: e instanceof Error ? e.message : "Unknown error" },', '      { error: formatAiError(e) },')
+              return text
+          patch(ROOT / 'src/app/api/plans/analyze/route.ts', patch_analyze)
+
+          def patch_batch(text):
+              text = replace(text, 'import { getAnthropicKey } from "@/lib/env";', 'import { ANTHROPIC_KEY_ERROR, formatAiError } from "@/lib/ai/errors";\nimport { getAnthropicKey, hasValidAnthropicKeyFormat } from "@/lib/env";')
+              text = replace(text, '    if (!apiKey) {', '    if (!hasValidAnthropicKeyFormat(apiKey)) {')
+              text = replace(text, '        { error: "מפתח ה-AI לא מוגדר. הוסף ANTHROPIC_API_KEY ל-.env.local והפעל מחדש את השרת." },', '        { error: ANTHROPIC_KEY_ERROR },')
+              text = replace(text, '            error: e instanceof Error ? e.message : "Unknown",', '            error: formatAiError(e),')
+              text = replace(text, '      { error: e instanceof Error ? e.message : "Unknown error" },', '      { error: formatAiError(e) },')
+              text = replace(text, '''  } catch (e) {
+    await supabase
+      .from("plan_analyses")
+      .update({
+        status: "failed",
+        error_message: e instanceof Error ? e.message : "Unknown",''', '''  } catch (e) {
+    const errMsg = formatAiError(e);
+    await supabase
+      .from("plan_analyses")
+      .update({
+        status: "failed",
+        error_message: errMsg,''')
+              text = replace(text, '    const errMsg = e instanceof Error ? e.message : "Unknown";', '    const errMsg = formatAiError(e);')
+              return text
+          patch(ROOT / 'src/app/api/plans/analyze-batch/route.ts', patch_batch)
+
+          def patch_extract(text):
+              text = replace(text, 'import { getAnthropicKey } from "@/lib/env";', 'import { formatAiError } from "@/lib/ai/errors";\nimport { getAnthropicKey, hasValidAnthropicKeyFormat } from "@/lib/env";')
+              text = replace(text, '    if (!apiKey) {', '    if (!hasValidAnthropicKeyFormat(apiKey)) {')
+              text = replace(text, '        error: e instanceof Error ? e.message : "Unknown",', '        error: formatAiError(e),')
+              return text
+          patch(ROOT / 'src/app/api/plans/extract-title/route.ts', patch_extract)
+
+      - name: Commit patched files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manelo
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Codex hotfix PWA icon upload and AI errors"
+          git push
