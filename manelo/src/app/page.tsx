@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { InstallAppButton } from "@/components/pwa/install-app-button";
 import { APP_BRAND_NAME, APP_BRAND_TAGLINE, APP_LOGO_ICON } from "@/lib/brand";
 import {
   FileText,
@@ -46,15 +47,15 @@ const features = [
 export default function HomePage() {
   return (
     <main className="min-h-screen">
+      {/* Hero */}
       <section className="bg-gradient-to-br from-[var(--color-brand-yellow)]/30 via-white to-[var(--color-brand-blue)]/15 px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-5xl text-center">
           <div className="mb-7 inline-flex flex-col items-center gap-3 sm:flex-row-reverse sm:gap-4">
-            <img
-              src={APP_LOGO_ICON}
-              alt="מנלו בנייה"
-              width={128}
-              height={128}
-              className="h-28 w-28 object-contain sm:h-32 sm:w-32"
+            <div
+              role="img"
+              aria-label="מנלו בנייה"
+              className="h-28 w-28 shrink-0 rounded-[24px] bg-contain bg-center bg-no-repeat sm:h-32 sm:w-32"
+              style={{ backgroundImage: `url("${APP_LOGO_ICON}")` }}
             />
             <div className="text-center sm:text-right">
               <p className="text-3xl font-extrabold text-[var(--color-brand-dark)] sm:text-4xl">
@@ -85,10 +86,12 @@ export default function HomePage() {
                 כבר יש לי חשבון
               </Button>
             </Link>
+            <InstallAppButton />
           </div>
         </div>
       </section>
 
+      {/* Features */}
       <section className="px-4 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-3">
@@ -115,6 +118,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="border-t border-neutral-200 py-8 px-4 text-center text-sm text-neutral-500">
         © {new Date().getFullYear()} {APP_BRAND_NAME} - כל הזכויות שמורות
       </footer>
