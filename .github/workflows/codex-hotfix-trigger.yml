@@ -1,0 +1,44 @@
+name: Codex Hotfix Trigger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .codex-hotfix-trigger
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run stored Codex hotfix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          source = Path('.github/workflows/codex-hotfix-pwa-upload-ai.yml').read_text(encoding='utf-8')
+          start = source.index('          from pathlib import Path')
+          end = source.index('\n\n      - name: Commit patched files')
+          block = source[start:end]
+          code = '\n'.join(line[10:] if line.startswith('          ') else line for line in block.splitlines())
+          exec(compile(code, 'codex-hotfix', 'exec'))
+          PY
+
+      - name: Commit patched files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manelo
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Codex hotfix PWA icon upload and AI errors"
+          git push
