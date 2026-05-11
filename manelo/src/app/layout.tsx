@@ -4,15 +4,16 @@ import {
   APP_BRAND_NAME,
   APP_BRAND_SHORT_NAME,
   APP_BRAND_TAGLINE,
-  APP_LOGO_CIRCLE,
-  APP_LOGO_ICON,
+  APP_ASSET_VERSION,
+  APP_ICON_512,
+  APP_ICON_MASKABLE,
 } from "@/lib/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: `${APP_BRAND_NAME} - ניהול קבלנים`,
   description: "מערכת ניהול מקצועית לקבלני בניין - ניתוח תכניות, כתבי כמויות, הצעות מחיר, ניהול פרויקטים וצוות",
-  manifest: "/manifest.json",
+  manifest: `/manifest.json?v=${APP_ASSET_VERSION}`,
   applicationName: APP_BRAND_NAME,
   appleWebApp: {
     capable: true,
@@ -20,8 +21,8 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: APP_LOGO_ICON,
-    apple: APP_LOGO_CIRCLE,
+    icon: APP_ICON_512,
+    apple: APP_ICON_MASKABLE,
   },
 };
 
