@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PublicTaskUpdater } from "@/components/tasks/public-task-updater";
-import Image from "next/image";
 import { Calendar, User, Briefcase } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { MenloAppIcon } from "@/components/brand/menlo-app-icon";
+import { APP_DEFAULT_ORG_NAME } from "@/lib/brand";
 
 interface PageProps {
   params: Promise<{ token: string }>;
@@ -62,13 +63,9 @@ export default async function PublicTaskPage({ params }: PageProps) {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 pt-4">
-          <Image
-            src="/logo-full.svg"
-            alt={org?.name || "מנלו בנייה"}
-            width={150}
-            height={60}
-            priority
-            className="object-contain mx-auto mb-2"
+          <MenloAppIcon
+            className="mx-auto mb-2 h-20 w-20"
+            title={org?.name || APP_DEFAULT_ORG_NAME}
           />
           <h1 className="text-xl font-bold text-[var(--color-brand-dark)]">משימה לביצוע</h1>
         </div>
@@ -134,7 +131,7 @@ export default async function PublicTaskPage({ params }: PageProps) {
         </Card>
 
         <p className="text-center text-xs text-neutral-400 mt-6">
-          קישור פרטי - לא לשתף · {org?.name || "מנלו בנייה"}
+          קישור פרטי - לא לשתף · {org?.name || APP_DEFAULT_ORG_NAME}
         </p>
       </div>
     </div>
