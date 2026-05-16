@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
+import { Logo } from "@/components/brand/logo";
+import { APP_BRAND_NAME } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -68,13 +69,10 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white p-8 shadow-xl border border-neutral-200">
           <div className="mb-6 flex flex-col items-center text-center">
-            <img
-              src={APP_LOGO_ICON}
-              alt={APP_BRAND_NAME}
-              width={120}
-              height={120}
-              className="mb-2 h-24 w-24 object-contain"
-            />
+            <Logo variant="full" size={72} className="mb-2 w-[200px] max-w-full" />
+            <p className="text-lg font-extrabold text-[var(--color-brand-dark)]">
+              {APP_BRAND_NAME}
+            </p>
             <p className="text-sm text-neutral-500">
               הרשמה חדשה - 30 שניות וסיימנו
             </p>
