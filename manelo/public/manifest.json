@@ -2,8 +2,8 @@
   "name": "מנלו קודקס",
   "short_name": "קודקס",
   "description": "אפליקציה אישית לקבלן בניין - פרויקטים, תכניות, כתבי כמויות והצעות מחיר",
-  "id": "/?app=menlo-codex-v5",
-  "start_url": "/dashboard?source=pwa&v=2026-05-17-2",
+  "id": "/?app=menlo-codex-v6",
+  "start_url": "/dashboard?source=pwa&v=2026-05-17-3",
   "scope": "/",
   "lang": "he",
   "dir": "rtl",
@@ -15,9 +15,9 @@
   "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/logo-icon.svg?v=2026-05-17-2",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
+      "src": "/logo-icon.png?v=2026-05-17-3",
+      "sizes": "1024x1024",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
@@ -44,19 +44,19 @@
       "name": "פרויקטים",
       "short_name": "פרויקטים",
       "url": "/dashboard/projects",
-      "icons": [{ "src": "/logo-icon.svg?v=2026-05-17-2", "sizes": "512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/logo-icon.png?v=2026-05-17-3", "sizes": "1024x1024", "type": "image/png" }]
     },
     {
       "name": "כתבי כמויות",
       "short_name": "כמויות",
       "url": "/dashboard/boq",
-      "icons": [{ "src": "/logo-icon.svg?v=2026-05-17-2", "sizes": "512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/logo-icon.png?v=2026-05-17-3", "sizes": "1024x1024", "type": "image/png" }]
     },
     {
       "name": "הצעות מחיר",
       "short_name": "הצעות",
       "url": "/dashboard/quotes",
-      "icons": [{ "src": "/logo-icon.svg?v=2026-05-17-2", "sizes": "512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/logo-icon.png?v=2026-05-17-3", "sizes": "1024x1024", "type": "image/png" }]
     }
   ],
   "prefer_related_applications": false
