@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
-import { APP_BRAND_NAME, APP_BRAND_TAGLINE, APP_LOGO_ICON } from "@/lib/brand";
+import { MenloAppIcon } from "@/components/brand/menlo-app-icon";
+import { APP_BRAND_NAME, APP_BRAND_TAGLINE } from "@/lib/brand";
 import {
   FileText,
   Calculator,
@@ -51,12 +52,7 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-[var(--color-brand-yellow)]/30 via-white to-[var(--color-brand-blue)]/15 px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-5xl text-center">
           <div className="mb-7 inline-flex flex-col items-center gap-3 sm:flex-row-reverse sm:gap-4">
-            <div
-              role="img"
-              aria-label="מנלו בנייה"
-              className="h-28 w-28 shrink-0 rounded-[24px] bg-contain bg-center bg-no-repeat sm:h-32 sm:w-32"
-              style={{ backgroundImage: `url("${APP_LOGO_ICON}")` }}
-            />
+            <MenloAppIcon className="h-28 w-28 sm:h-32 sm:w-32" />
             <div className="text-center sm:text-right">
               <p className="text-3xl font-extrabold text-[var(--color-brand-dark)] sm:text-4xl">
                 {APP_BRAND_NAME}
