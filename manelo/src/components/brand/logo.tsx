@@ -35,13 +35,16 @@ export function Logo({ variant = "full", size = 64, className }: LogoProps) {
   }
 
   return (
-    <div className={cn("inline-flex items-center", className)}>
+    <div
+      className={cn("inline-flex items-center", className)}
+      style={{ width, height }}
+    >
       <img
         src={APP_LOGO_FULL}
         alt={APP_BRAND_NAME}
         width={width}
         height={height}
-        className="h-auto max-h-full max-w-full object-contain"
+        className="h-full w-full object-contain"
         draggable={false}
       />
     </div>
