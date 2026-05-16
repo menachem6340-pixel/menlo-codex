@@ -1,9 +1,8 @@
 import {
   APP_BRAND_NAME,
-  APP_LOGO_CIRCLE,
   APP_LOGO_FULL,
-  APP_LOGO_ICON,
 } from "@/lib/brand";
+import { MenloAppIcon } from "@/components/brand/menlo-app-icon";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -12,31 +11,46 @@ interface LogoProps {
   className?: string;
 }
 
+/**
+ * לוגו גרסת Codex
+ *
+ * variant="full"   - הלוגו המקורי הרחב של מנלו בניה
+ * variant="circle" - אייקון האפליקציה המקורי על רקע צהוב
+ * variant="icon"   - אייקון האפליקציה המקורי על רקע צהוב
+ */
 export function Logo({ variant = "full", size = 64, className }: LogoProps) {
-  const src =
-    variant === "circle"
-      ? APP_LOGO_CIRCLE
-      : variant === "icon"
-        ? APP_LOGO_ICON
-        : APP_LOGO_FULL;
-
-  const aspectRatio = variant === "full" ? 2.68 : 1;
+  const aspectRatio = variant === "full" ? 2.53 : 1;
   const width = variant === "full" ? size * aspectRatio : size;
   const height = size;
+
+  if (variant !== "full") {
+    return (
+      <div
+        className={cn("inline-flex items-center", className)}
+        style={{ width: size, height: size }}
+      >
+        <MenloAppIcon className="h-full w-full" title={APP_BRAND_NAME} />
+      </div>
+    );
+  }
 
   return (
     <div className={cn("inline-flex items-center", className)}>
       <img
-        src={src}
+        src={APP_LOGO_FULL}
         alt={APP_BRAND_NAME}
         width={width}
         height={height}
-        className="object-contain"
+        className="h-auto max-h-full max-w-full object-contain"
+        draggable={false}
       />
     </div>
   );
 }
 
+/**
+ * fallback טקסטואלי לפני שהלוגו הוטען
+ */
 export function LogoText({ className }: { className?: string }) {
   return (
     <div className={cn("inline-flex items-baseline gap-2", className)}>
