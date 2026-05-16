@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/brand/logo";
+import { APP_BRAND_NAME } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { LogOut, Menu } from "lucide-react";
 import { MobileMenu } from "@/components/dashboard/mobile-menu";
-import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
 
 interface TopBarProps {
   profile: {
@@ -40,17 +41,13 @@ export function TopBar({ profile, userEmail }: TopBarProps) {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <img
-            src={APP_LOGO_ICON}
-            alt={APP_BRAND_NAME}
-            className="h-8 w-8 shrink-0 rounded-lg object-contain lg:hidden"
-          />
+          <Logo variant="full" size={28} className="w-[78px] shrink-0 lg:hidden" />
           <div className="min-w-0">
             <div className="font-medium text-sm truncate">
               שלום, {profile?.full_name || userEmail}
             </div>
             <div className="hidden sm:block text-xs text-neutral-500 truncate">
-              {profile?.organization?.name || "מנלו בנייה"}
+              {profile?.organization?.name || APP_BRAND_NAME}
             </div>
           </div>
         </div>
