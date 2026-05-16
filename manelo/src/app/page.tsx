@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
-import { MenloAppIcon } from "@/components/brand/menlo-app-icon";
+import { Logo } from "@/components/brand/logo";
 import { APP_BRAND_NAME, APP_BRAND_TAGLINE } from "@/lib/brand";
 import {
   FileText,
@@ -51,10 +51,10 @@ export default function HomePage() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-[var(--color-brand-yellow)]/30 via-white to-[var(--color-brand-blue)]/15 px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-5xl text-center">
-          <div className="mb-7 inline-flex flex-col items-center gap-3 sm:flex-row-reverse sm:gap-4">
-            <MenloAppIcon className="h-28 w-28 sm:h-32 sm:w-32" />
-            <div className="text-center sm:text-right">
-              <p className="text-3xl font-extrabold text-[var(--color-brand-dark)] sm:text-4xl">
+          <div className="mb-7 inline-flex flex-col items-center gap-3">
+            <Logo variant="full" size={94} className="w-[240px] max-w-[78vw] sm:w-[300px]" />
+            <div className="text-center">
+              <p className="text-xl font-extrabold text-[var(--color-brand-dark)] sm:text-2xl">
                 {APP_BRAND_NAME}
               </p>
               <p className="mt-1 text-sm font-medium text-neutral-500 sm:text-base">
