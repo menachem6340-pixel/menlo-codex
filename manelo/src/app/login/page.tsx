@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { APP_BRAND_NAME, APP_BRAND_TAGLINE, APP_LOGO_ICON } from "@/lib/brand";
+import { Logo } from "@/components/brand/logo";
+import { APP_BRAND_NAME, APP_BRAND_TAGLINE } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -42,13 +43,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white p-8 shadow-xl border border-neutral-200">
           <div className="mb-8 flex flex-col items-center text-center">
-            <img
-              src={APP_LOGO_ICON}
-              alt={APP_BRAND_NAME}
-              width={128}
-              height={128}
-              className="mb-3 h-28 w-28 object-contain"
-            />
+            <Logo variant="full" size={78} className="mb-3 w-[210px] max-w-full" />
+            <p className="text-lg font-extrabold text-[var(--color-brand-dark)]">
+              {APP_BRAND_NAME}
+            </p>
             <p className="text-sm text-neutral-500">
               {APP_BRAND_TAGLINE}
             </p>
