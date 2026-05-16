@@ -5,8 +5,8 @@ import {
   APP_BRAND_SHORT_NAME,
   APP_BRAND_TAGLINE,
   APP_ASSET_VERSION,
-  APP_ICON_512,
-  APP_ICON_MASKABLE,
+  APP_ICON_512_VERSIONED,
+  APP_ICON_MASKABLE_VERSIONED,
 } from "@/lib/brand";
 import "./globals.css";
 
@@ -21,8 +21,16 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: [{ url: `${APP_ICON_512}?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" }],
-    apple: [{ url: `${APP_ICON_MASKABLE}?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" }],
+    icon: [
+      { url: `/favicon.ico?v=${APP_ASSET_VERSION}`, type: "image/png" },
+      { url: `/icon.png?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" },
+      { url: APP_ICON_512_VERSIONED, sizes: "1024x1024", type: "image/png" },
+    ],
+    shortcut: [{ url: `/favicon.ico?v=${APP_ASSET_VERSION}`, type: "image/png" }],
+    apple: [
+      { url: `/apple-icon.png?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" },
+      { url: APP_ICON_MASKABLE_VERSIONED, sizes: "1024x1024", type: "image/png" },
+    ],
   },
 };
 
