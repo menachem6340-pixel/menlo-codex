@@ -2,8 +2,8 @@
   "name": "מנלו קודקס",
   "short_name": "קודקס",
   "description": "אפליקציה אישית לקבלן בניין - פרויקטים, תכניות, כתבי כמויות והצעות מחיר",
-  "id": "/?app=menlo-codex-v6",
-  "start_url": "/dashboard?source=pwa&v=2026-05-17-3",
+  "id": "/?app=menlo-codex-v7",
+  "start_url": "/dashboard?source=pwa&v=2026-05-17-4",
   "scope": "/",
   "lang": "he",
   "dir": "rtl",
@@ -15,25 +15,37 @@
   "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/logo-icon.png?v=2026-05-17-3",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/menlo-app-icon-192-v20260517b.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/menlo-app-icon-512-v20260517b.png",
+      "src": "/icon.png?v=2026-05-17-4",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/menlo-app-icon-maskable-512-v20260517b.png",
+      "src": "/apple-icon.png?v=2026-05-17-4",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo-icon.png?v=2026-05-17-4",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/menlo-app-icon-192-v20260517b.png?v=2026-05-17-4",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/menlo-app-icon-512-v20260517b.png?v=2026-05-17-4",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/menlo-app-icon-maskable-512-v20260517b.png?v=2026-05-17-4",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -44,19 +56,19 @@
       "name": "פרויקטים",
       "short_name": "פרויקטים",
       "url": "/dashboard/projects",
-      "icons": [{ "src": "/logo-icon.png?v=2026-05-17-3", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "/icon.png?v=2026-05-17-4", "sizes": "512x512", "type": "image/png" }]
     },
     {
       "name": "כתבי כמויות",
       "short_name": "כמויות",
       "url": "/dashboard/boq",
-      "icons": [{ "src": "/logo-icon.png?v=2026-05-17-3", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "/icon.png?v=2026-05-17-4", "sizes": "512x512", "type": "image/png" }]
     },
     {
       "name": "הצעות מחיר",
       "short_name": "הצעות",
       "url": "/dashboard/quotes",
-      "icons": [{ "src": "/logo-icon.png?v=2026-05-17-3", "sizes": "1024x1024", "type": "image/png" }]
+      "icons": [{ "src": "/icon.png?v=2026-05-17-4", "sizes": "512x512", "type": "image/png" }]
     }
   ],
   "prefer_related_applications": false
