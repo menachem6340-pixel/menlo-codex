@@ -2,8 +2,8 @@
   "name": "מנלו קודקס",
   "short_name": "קודקס",
   "description": "אפליקציה אישית לקבלן בניין - פרויקטים, תכניות, כתבי כמויות והצעות מחיר",
-  "id": "/?app=menlo-codex-v7",
-  "start_url": "/dashboard?source=pwa&v=2026-05-17-4",
+  "id": "/?app=menlo-codex-v8",
+  "start_url": "/dashboard?source=pwa",
   "scope": "/",
   "lang": "he",
   "dir": "rtl",
@@ -15,40 +15,28 @@
   "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/icon.png?v=2026-05-17-4",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/apple-icon.png?v=2026-05-17-4",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/logo-icon.png?v=2026-05-17-4",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/menlo-app-icon-192-v20260517b.png?v=2026-05-17-4",
+      "src": "/app-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/menlo-app-icon-512-v20260517b.png?v=2026-05-17-4",
+      "src": "/app-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/menlo-app-icon-maskable-512-v20260517b.png?v=2026-05-17-4",
+      "src": "/app-icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/logo-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
@@ -56,19 +44,19 @@
       "name": "פרויקטים",
       "short_name": "פרויקטים",
       "url": "/dashboard/projects",
-      "icons": [{ "src": "/icon.png?v=2026-05-17-4", "sizes": "512x512", "type": "image/png" }]
+      "icons": [{ "src": "/app-icon-512.png", "sizes": "512x512", "type": "image/png" }]
     },
     {
       "name": "כתבי כמויות",
       "short_name": "כמויות",
       "url": "/dashboard/boq",
-      "icons": [{ "src": "/icon.png?v=2026-05-17-4", "sizes": "512x512", "type": "image/png" }]
+      "icons": [{ "src": "/app-icon-512.png", "sizes": "512x512", "type": "image/png" }]
     },
     {
       "name": "הצעות מחיר",
       "short_name": "הצעות",
       "url": "/dashboard/quotes",
-      "icons": [{ "src": "/icon.png?v=2026-05-17-4", "sizes": "512x512", "type": "image/png" }]
+      "icons": [{ "src": "/app-icon-512.png", "sizes": "512x512", "type": "image/png" }]
     }
   ],
   "prefer_related_applications": false
