@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/brand/logo";
+import { InstallAppButton } from "@/components/pwa/install-app-button";
 import { APP_BRAND_NAME } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { LogOut, Menu } from "lucide-react";
@@ -51,10 +52,13 @@ export function TopBar({ profile, userEmail }: TopBarProps) {
             </div>
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" />
-          <span className="hidden sm:inline">יציאה</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <InstallAppButton compact className="hidden sm:inline-flex" />
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">יציאה</span>
+          </Button>
+        </div>
       </header>
       <MobileMenu
         open={menuOpen}
