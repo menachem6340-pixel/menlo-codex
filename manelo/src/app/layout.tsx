@@ -13,7 +13,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: `${APP_BRAND_NAME} - ניהול קבלנים`,
   description: "מערכת ניהול מקצועית לקבלני בניין - ניתוח תכניות, כתבי כמויות, הצעות מחיר, ניהול פרויקטים וצוות",
-  manifest: `/manifest.json?v=${APP_ASSET_VERSION}`,
+  manifest: "/manifest.json",
   applicationName: APP_BRAND_NAME,
   appleWebApp: {
     capable: true,
@@ -23,12 +23,14 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: `/favicon.ico?v=${APP_ASSET_VERSION}`, type: "image/png" },
-      { url: `/icon.png?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" },
+      { url: "/app-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/app-icon-512.png", sizes: "512x512", type: "image/png" },
       { url: APP_ICON_512_VERSIONED, sizes: "1024x1024", type: "image/png" },
     ],
     shortcut: [{ url: `/favicon.ico?v=${APP_ASSET_VERSION}`, type: "image/png" }],
     apple: [
-      { url: `/apple-icon.png?v=${APP_ASSET_VERSION}`, sizes: "512x512", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/app-icon-maskable-512.png", sizes: "512x512", type: "image/png" },
       { url: APP_ICON_MASKABLE_VERSIONED, sizes: "1024x1024", type: "image/png" },
     ],
   },
