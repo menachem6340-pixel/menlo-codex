@@ -23,14 +23,14 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: `/favicon.ico?v=${APP_ASSET_VERSION}`, type: "image/png" },
-      { url: "/app-icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/app-icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/menlo-app-icon-192-v20260517b.png", sizes: "192x192", type: "image/png" },
+      { url: "/menlo-app-icon-512-v20260517b.png", sizes: "512x512", type: "image/png" },
       { url: APP_ICON_512_VERSIONED, sizes: "1024x1024", type: "image/png" },
     ],
     shortcut: [{ url: `/favicon.ico?v=${APP_ASSET_VERSION}`, type: "image/png" }],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "512x512", type: "image/png" },
-      { url: "/app-icon-maskable-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/menlo-app-icon-maskable-512-v20260517b.png", sizes: "512x512", type: "image/png" },
       { url: APP_ICON_MASKABLE_VERSIONED, sizes: "1024x1024", type: "image/png" },
     ],
   },
