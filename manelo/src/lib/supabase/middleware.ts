@@ -33,7 +33,8 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isPublicTaskRoute = pathname.startsWith("/tasks/public/");
   const isPublicTaskApiRoute = pathname.startsWith("/api/tasks/public/");
-  const isPublicRoute = isAuthRoute || pathname === "/" || isPublicTaskRoute || isPublicTaskApiRoute;
+  const isHolidayMenuRoute = pathname.startsWith("/rosh-hashana");
+  const isPublicRoute = isAuthRoute || pathname === "/" || isPublicTaskRoute || isPublicTaskApiRoute || isHolidayMenuRoute;
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
