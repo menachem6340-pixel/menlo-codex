@@ -34,7 +34,9 @@ export async function updateSession(request: NextRequest) {
   const isPublicTaskRoute = pathname.startsWith("/tasks/public/");
   const isPublicTaskApiRoute = pathname.startsWith("/api/tasks/public/");
   const isHolidayMenuRoute = pathname.startsWith("/rosh-hashana");
-  const isPublicRoute = isAuthRoute || pathname === "/" || isPublicTaskRoute || isPublicTaskApiRoute || isHolidayMenuRoute;
+  const isWebhookRoute = pathname === "/api/integrations/whatsapp/intake";
+  const isHealthRoute = pathname === "/api/health";
+  const isPublicRoute = isAuthRoute || pathname === "/" || isPublicTaskRoute || isPublicTaskApiRoute || isHolidayMenuRoute || isWebhookRoute || isHealthRoute;
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

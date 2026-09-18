@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Settings as SettingsIcon } from "lucide-react";
+import { WhatsAppSettings } from "@/components/settings/whatsapp-settings";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -13,9 +14,13 @@ export default async function SettingsPage() {
     .single();
 
   const org = profile?.organization as { name: string; vat_rate: number; brand_color: string } | null;
+  const [{ data: projects }, { data: whatsappChannels }] = await Promise.all([
+    supabase.from("projects").select("id, name").order("name"),
+    supabase.from("whatsapp_project_channels").select("id, chat_id, chat_name, project_id, project:projects(name)").eq("is_active", true).order("created_at", { ascending: false }),
+  ]);
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <PageHeader title="הגדרות" description="הגדרות העסק והמשתמש" />
 
       <Card className="mb-6">
@@ -32,7 +37,7 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>פרטי העסק</CardTitle>
         </CardHeader>
@@ -43,9 +48,15 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      <p className="text-center text-xs text-neutral-400 mt-6">
-        עריכת הגדרות מתקדמת תתווסף בשלב הבא
-      </p>
+      {profile?.organization_id && (
+        <Card>
+          <CardHeader><CardTitle>קליטת WhatsApp לפרויקטים</CardTitle></CardHeader>
+          <CardContent>
+            <WhatsAppSettings organizationId={profile.organization_id} projects={projects || []} channels={whatsappChannels || []} />
+          </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { APP_BRAND_NAME, APP_LOGO_ICON } from "@/lib/brand";
 
 interface MenloAppIconProps {
@@ -19,11 +20,14 @@ export function MenloAppIcon({
         className
       )}
     >
-      <img
+      <Image
         src={APP_LOGO_ICON}
         alt=""
+        width={128}
+        height={128}
         className="h-full w-full object-contain"
         draggable={false}
+        unoptimized
       />
     </span>
   );

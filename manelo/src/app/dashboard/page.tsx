@@ -1,468 +1,54 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import {
-  Briefcase,
-  Calculator,
-  Clock,
-  FileText,
-  ListTodo,
-  Plus,
-  TrendingUp,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { AlertTriangle, ArrowLeft, BriefcaseBusiness, CalendarClock, Camera, CheckCircle2, CircleDashed, ListTodo, MapPinned, Plus, UserRoundX } from "lucide-react";
 
-const openTaskStatuses = ["not_started", "in_progress", "blocked"];
-const quoteWorkStatuses = ["draft", "sent"];
-
-const projectStatusLabels: Record<string, string> = {
-  lead: "ליד",
-  quoted: "הצעת מחיר",
-  active: "פעיל",
-  paused: "מושהה",
-  completed: "הושלם",
-  cancelled: "בוטל",
-};
-
-const taskStatusLabels: Record<string, { label: string; color: string }> = {
-  not_started: { label: "טרם התחיל", color: "bg-neutral-100 text-neutral-700" },
-  in_progress: { label: "בביצוע", color: "bg-blue-100 text-blue-700" },
-  blocked: { label: "חסום", color: "bg-orange-100 text-orange-700" },
-  completed: { label: "הושלם", color: "bg-green-100 text-green-700" },
-  cancelled: { label: "בוטל", color: "bg-red-100 text-red-700" },
-};
-
-const quoteStatusLabels: Record<string, { label: string; color: string }> = {
-  draft: { label: "טיוטה", color: "bg-neutral-100 text-neutral-700" },
-  sent: { label: "נשלחה", color: "bg-blue-100 text-blue-700" },
-  approved: { label: "אושרה", color: "bg-green-100 text-green-700" },
-  rejected: { label: "נדחתה", color: "bg-red-100 text-red-700" },
-  expired: { label: "פג תוקף", color: "bg-yellow-100 text-yellow-700" },
-};
+const OPEN = ["not_started", "in_progress", "blocked"];
+type ProjectRelation = { id: string; name: string } | { id: string; name: string }[] | null;
+type Task = { id: string; title: string; status: string; priority: string; planned_end?: string | null; assigned_to_contact_id?: string | null; updated_at?: string | null; project: ProjectRelation };
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-
-  const [
-    { count: projectsCount },
-    { count: activeProjectsCount },
-    { count: clientsCount },
-    { count: openTasksCount },
-    { count: quotesInWorkCount },
-    { data: quotesInWork },
-    { data: recentProjects },
-    { data: openTasks },
-    { data: recentQuotes },
-    { data: recentClients },
-  ] = await Promise.all([
-    supabase.from("projects").select("*", { count: "exact", head: true }),
-    supabase
-      .from("projects")
-      .select("*", { count: "exact", head: true })
-      .in("status", ["lead", "quoted", "active", "paused"]),
-    supabase
-      .from("contacts")
-      .select("*", { count: "exact", head: true })
-      .eq("type", "client"),
-    supabase
-      .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .in("status", openTaskStatuses),
-    supabase
-      .from("quotes")
-      .select("*", { count: "exact", head: true })
-      .in("status", quoteWorkStatuses),
-    supabase.from("quotes").select("total_amount").in("status", quoteWorkStatuses),
-    supabase
-      .from("projects")
-      .select("id, name, status, budget, start_date, client:contacts(name)")
-      .order("created_at", { ascending: false })
-      .limit(4),
-    supabase
-      .from("tasks")
-      .select("id, title, status, priority, planned_end, project:projects(id, name)")
-      .in("status", openTaskStatuses)
-      .order("updated_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("quotes")
-      .select("id, quote_number, title, status, total_amount, issue_date, client:contacts(name), project:projects(id, name)")
-      .order("created_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("contacts")
-      .select("id, name, phone, city")
-      .eq("type", "client")
-      .order("created_at", { ascending: false })
-      .limit(5),
+  const [{ data: projects, error: projectsError }, { data: tasks, error: tasksError }] = await Promise.all([
+    supabase.from("projects").select("id, name, status, address, updated_at").in("status", ["lead", "quoted", "active", "paused"]).order("updated_at", { ascending: false }).limit(8),
+    supabase.from("tasks").select("id, title, status, priority, planned_end, assigned_to_contact_id, updated_at, project:projects(id, name)").in("status", OPEN).order("updated_at", { ascending: false }).limit(100),
   ]);
+  const today = new Date().toISOString().slice(0, 10);
+  const openTasks = (tasks || []) as Task[];
+  const blocked = openTasks.filter((task) => task.status === "blocked");
+  const overdue = openTasks.filter((task) => task.planned_end && task.planned_end < today);
+  const unassigned = openTasks.filter((task) => !task.assigned_to_contact_id);
+  const unscheduled = openTasks.filter((task) => !task.planned_end);
+  const attention = uniqueTasks([...blocked, ...overdue, ...unassigned]).slice(0, 8);
+  const unavailable = projectsError || tasksError;
 
-  const pipelineTotal = (quotesInWork || []).reduce(
-    (sum, q) => sum + Number(q.total_amount || 0),
-    0
-  );
-  const firstProjectId = recentProjects?.[0]?.id;
-  const hasWork = Boolean((projectsCount || 0) + (clientsCount || 0) + (recentQuotes?.length || 0));
-
-  const stats = [
-    {
-      label: "פרויקטים פעילים",
-      value: activeProjectsCount ?? 0,
-      helper: `${projectsCount ?? 0} פרויקטים בסך הכל`,
-      icon: Briefcase,
-      color: "text-[var(--color-brand-blue)]",
-      bg: "bg-[var(--color-brand-blue)]/10",
-    },
-    {
-      label: "משימות פתוחות",
-      value: openTasksCount ?? 0,
-      helper: "טרם התחיל, בביצוע או חסום",
-      icon: ListTodo,
-      color: "text-[var(--color-brand-green)]",
-      bg: "bg-[var(--color-brand-green)]/10",
-    },
-    {
-      label: "הצעות בטיפול",
-      value: quotesInWorkCount ?? 0,
-      helper: "טיוטות והצעות שנשלחו",
-      icon: Calculator,
-      color: "text-[var(--color-brand-dark)]",
-      bg: "bg-[var(--color-brand-yellow)]/30",
-    },
-    {
-      label: "שווי הצעות פתוחות",
-      value: formatCurrency(pipelineTotal),
-      helper: "סכום לפני אישור לקוח",
-      icon: Wallet,
-      color: "text-[var(--color-brand-blue)]",
-      bg: "bg-[var(--color-brand-blue)]/10",
-    },
-  ];
-
-  return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--color-brand-dark)]">
-            מרכז עבודה
-          </h1>
-          <p className="text-neutral-600 mt-1">
-            תמונת מצב מהירה של הפרויקטים, המשימות, הלקוחות וההצעות שלך
-          </p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Link href="/dashboard/clients/new">
-            <Button variant="outline" size="sm">
-              <Users className="h-4 w-4" />
-              לקוח חדש
-            </Button>
-          </Link>
-          <Link href="/dashboard/projects/new">
-            <Button size="sm">
-              <Plus className="h-4 w-4" />
-              פרויקט חדש
-            </Button>
-          </Link>
-        </div>
+  return <div className="mx-auto max-w-7xl space-y-6">
+    <section className="relative overflow-hidden rounded-[1.6rem] bg-[var(--color-brand-dark)] px-5 py-7 text-white shadow-xl shadow-neutral-900/10 sm:px-8 sm:py-9">
+      <div className="absolute -left-20 -top-24 h-64 w-64 rounded-full bg-[var(--color-brand-blue)]/35 blur-3xl" />
+      <div className="relative flex flex-wrap items-end justify-between gap-6">
+        <div className="max-w-2xl"><span className="mb-3 inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-[var(--color-brand-yellow)]">מרכז ביצוע · מנלו קודקס</span><h1 className="text-3xl font-bold tracking-tight sm:text-4xl">מה דורש החלטה עכשיו</h1><p className="mt-2 max-w-xl text-sm leading-6 text-neutral-300">משימות, חסמים וחוסרים מכל האתרים. לחיצה פותחת את העבודה בהקשר שלה.</p></div>
+        <div className="flex gap-2"><Link href="/dashboard/projects/new"><Button size="sm"><Plus className="h-4 w-4" />פרויקט חדש</Button></Link><Link href="/dashboard/tasks"><Button size="sm" variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/20"><ListTodo className="h-4 w-4" />כל המשימות</Button></Link></div>
       </div>
+      <div className="relative mt-7 grid grid-cols-2 gap-2 sm:grid-cols-4"><HeroMetric icon={AlertTriangle} label="חסומות" value={blocked.length} tone="yellow" /><HeroMetric icon={CalendarClock} label="באיחור" value={overdue.length} /><HeroMetric icon={UserRoundX} label="ללא אחראי" value={unassigned.length} /><HeroMetric icon={CircleDashed} label="ללא יעד" value={unscheduled.length} /></div>
+    </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {stats.map((s) => (
-          <Card key={s.label}>
-            <CardContent className="p-5">
-              <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg mb-3 ${s.bg}`}>
-                <s.icon className={`h-5 w-5 ${s.color}`} />
-              </div>
-              <div className="text-2xl font-bold text-[var(--color-brand-dark)] ltr-numbers">
-                {s.value}
-              </div>
-              <div className="text-sm text-neutral-700">{s.label}</div>
-              <div className="text-xs text-neutral-500 mt-1">{s.helper}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    {unavailable && <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"><strong>חלק מהמידע אינו זמין כרגע.</strong> המערכת אינה מציגה אפס במקום כשל. רענן את הדף או בדוק את החיבור.</div>}
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>מה לעשות עכשיו</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <NextAction
-              href="/dashboard/clients/new"
-              icon={Users}
-              title="הוסף לקוח"
-              description="פותח את זרימת העבודה: לקוח, פרויקט והצעה."
-            />
-            <NextAction
-              href="/dashboard/projects/new"
-              icon={Briefcase}
-              title="פתח פרויקט"
-              description="מרכז אחד לכל המשימות, התכניות והמסמכים."
-            />
-            <NextAction
-              href={firstProjectId ? `/dashboard/projects/${firstProjectId}/tasks` : "/dashboard/projects/new"}
-              icon={ListTodo}
-              title="נהל משימות"
-              description="תבניות ביצוע, משימות פתוחות ומעקב התקדמות."
-            />
-            <NextAction
-              href="/dashboard/quotes/new"
-              icon={FileText}
-              title="צור הצעה"
-              description="שורות עבודה, מע״מ, תנאי תשלום ו-PDF."
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {!hasWork && (
-        <Card className="mb-6 border-[var(--color-brand-yellow)]/60 bg-[var(--color-brand-yellow)]/10">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-[var(--color-brand-dark)] mb-1">
-                  התחלה מומלצת לעבודה ראשונה
-                </h2>
-                <p className="text-sm text-neutral-700">
-                  הוסף לקוח אחד, פתח פרויקט עבורו, צור כמה משימות ואז הפק הצעת מחיר. ככה תראה את כל הזרימה בלי להסתבך עם הגדרות.
-                </p>
-              </div>
-              <Link href="/dashboard/clients/new" className="shrink-0">
-                <Button>
-                  <Plus className="h-4 w-4" />
-                  התחל מלקוח ראשון
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-[var(--color-brand-blue)]" />
-              פרויקטים אחרונים
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!recentProjects || recentProjects.length === 0 ? (
-              <EmptyHint
-                text="עדיין אין פרויקטים. אחרי יצירת פרויקט תראה כאן את הסטטוס, הלקוח והתקציב."
-                href="/dashboard/projects/new"
-                action="פרויקט חדש"
-              />
-            ) : (
-              <div className="space-y-2">
-                {recentProjects.map((project) => {
-                  const client = firstRelation<{ name: string }>(project.client);
-                  return (
-                    <Link
-                      key={project.id}
-                      href={`/dashboard/projects/${project.id}`}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 p-3 hover:border-[var(--color-brand-yellow)] transition-colors"
-                    >
-                      <div className="min-w-0">
-                        <div className="font-medium truncate">{project.name}</div>
-                        <div className="text-xs text-neutral-500 truncate">
-                          {client?.name || "ללא לקוח"} · {projectStatusLabels[project.status] || project.status}
-                        </div>
-                      </div>
-                      <div className="text-sm font-semibold text-[var(--color-brand-blue)] ltr-numbers shrink-0">
-                        {project.budget ? formatCurrency(project.budget) : "אין תקציב"}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-[var(--color-brand-green)]" />
-              משימות פתוחות
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!openTasks || openTasks.length === 0 ? (
-              <EmptyHint
-                text="אין משימות פתוחות כרגע. אפשר להוסיף משימות מתוך עמוד פרויקט."
-                href={firstProjectId ? `/dashboard/projects/${firstProjectId}/tasks` : "/dashboard/projects/new"}
-                action="הוסף משימות"
-              />
-            ) : (
-              <div className="space-y-2">
-                {openTasks.map((task) => {
-                  const project = firstRelation<{ id: string; name: string }>(task.project);
-                  const status = taskStatusLabels[task.status] || taskStatusLabels.not_started;
-                  return (
-                    <Link
-                      key={task.id}
-                      href={project ? `/dashboard/projects/${project.id}/tasks` : "/dashboard/tasks"}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 p-3 hover:border-[var(--color-brand-yellow)] transition-colors"
-                    >
-                      <div className="min-w-0">
-                        <div className="font-medium truncate">{task.title}</div>
-                        <div className="text-xs text-neutral-500 truncate">
-                          {project?.name || "ללא פרויקט"}
-                          {task.planned_end ? ` · יעד: ${formatDate(task.planned_end)}` : ""}
-                        </div>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-full shrink-0 ${status.color}`}>
-                        {status.label}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-[var(--color-brand-blue)]" />
-              הצעות מחיר אחרונות
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!recentQuotes || recentQuotes.length === 0 ? (
-              <EmptyHint
-                text="עדיין אין הצעות מחיר. אפשר ליצור הצעה ידנית או מתוך כתב כמויות."
-                href="/dashboard/quotes/new"
-                action="הצעה חדשה"
-              />
-            ) : (
-              <div className="space-y-2">
-                {recentQuotes.map((quote) => {
-                  const client = firstRelation<{ name: string }>(quote.client);
-                  const status = quoteStatusLabels[quote.status] || quoteStatusLabels.draft;
-                  return (
-                    <Link
-                      key={quote.id}
-                      href={`/dashboard/quotes/${quote.id}`}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 p-3 hover:border-[var(--color-brand-yellow)] transition-colors"
-                    >
-                      <div className="min-w-0">
-                        <div className="font-medium truncate">
-                          <span dir="ltr">#{quote.quote_number}</span> · {quote.title}
-                        </div>
-                        <div className="text-xs text-neutral-500 truncate">
-                          {client?.name || "ללא לקוח"} · {formatDate(quote.issue_date)}
-                        </div>
-                      </div>
-                      <div className="text-left shrink-0">
-                        <div className="font-semibold text-[var(--color-brand-blue)] ltr-numbers">
-                          {formatCurrency(quote.total_amount || 0)}
-                        </div>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${status.color}`}>
-                          {status.label}
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-[var(--color-brand-green)]" />
-              לקוחות אחרונים
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!recentClients || recentClients.length === 0 ? (
-              <EmptyHint
-                text="עדיין אין לקוחות. מומלץ להתחיל בהוספת לקוח ראשון."
-                href="/dashboard/clients/new"
-                action="לקוח חדש"
-              />
-            ) : (
-              <div className="space-y-2">
-                {recentClients.map((client) => (
-                  <Link
-                    key={client.id}
-                    href={`/dashboard/clients/${client.id}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 p-3 hover:border-[var(--color-brand-yellow)] transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{client.name}</div>
-                      <div className="text-xs text-neutral-500 truncate">
-                        {[client.city, client.phone].filter(Boolean).join(" · ") || "אין פרטים נוספים"}
-                      </div>
-                    </div>
-                    <span className="text-xs text-[var(--color-brand-blue)] shrink-0">פתח</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+    <div className="grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
+      <section className="control-section">
+        <header><div><span className="eyebrow">סדר יום</span><h2>לטיפול והכרעה</h2></div><Link href="/dashboard/tasks" className="text-sm font-semibold text-[var(--color-brand-blue)]">פתח רשימה מלאה</Link></header>
+        <div className="divide-y divide-neutral-100">{attention.map((task) => { const project = first(task.project); const reason = task.status === "blocked" ? "חסום" : task.planned_end && task.planned_end < today ? "באיחור" : "ללא אחראי"; return <Link key={task.id} href={project ? `/dashboard/projects/${project.id}/tasks?task=${task.id}#task-${task.id}` : "/dashboard/tasks"} className="group grid gap-2 py-4 first:pt-0 sm:grid-cols-[1fr_140px_96px_auto] sm:items-center"><div><strong className="block text-sm text-neutral-900 group-hover:text-[var(--color-brand-blue)]">{task.title}</strong><span className="text-xs text-neutral-500">{project?.name || "פרויקט לא זמין"}</span></div><span className="text-xs text-neutral-500">{task.planned_end ? `יעד ${formatDate(task.planned_end)}` : "אין תאריך יעד"}</span><span className={`status-chip justify-self-start ${reason === "חסום" ? "bg-orange-50 text-orange-700" : reason === "באיחור" ? "bg-red-50 text-red-700" : ""}`}>{reason}</span><ArrowLeft className="hidden h-4 w-4 text-neutral-300 group-hover:text-[var(--color-brand-blue)] sm:block" /></Link>; })}{!attention.length && !unavailable && <div className="flex items-center gap-3 py-8 text-sm text-neutral-500"><CheckCircle2 className="h-5 w-5 text-emerald-600" />אין כרגע פריטים שמחייבים טיפול.</div>}</div>
+      </section>
+      <section className="control-section"><header><div><span className="eyebrow">שטח</span><h2>פעולות מהירות</h2></div></header><div className="grid gap-3"><QuickAction href="/dashboard/tasks" icon={Camera} title="פתח דיווח מצולם" text="בחר משימה והוסף תמונה או עדכון." /><QuickAction href="/dashboard/projects" icon={MapPinned} title="מרכז בקרת פרויקט" text="אזורים, מקבצים ומפרט מאושר." /><QuickAction href="/dashboard/plans" icon={BriefcaseBusiness} title="מצא תכנית מחייבת" text="גש לתכניות לפי פרויקט וסוג מסמך." /></div></section>
     </div>
-  );
+
+    <section><div className="mb-4 flex items-end justify-between"><div><span className="eyebrow">אתרים פעילים</span><h2 className="text-2xl font-bold">פרויקטים</h2></div><Link href="/dashboard/projects" className="text-sm font-semibold text-[var(--color-brand-blue)]">כל הפרויקטים</Link></div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{(projects || []).map((project) => <Link key={project.id} href={`/dashboard/projects/${project.id}`} className="group"><Card className="h-full transition-all hover:-translate-y-1 hover:border-[var(--color-brand-blue)]/30 hover:shadow-lg"><CardContent className="p-5"><div className="mb-7 flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-xl bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)]"><BriefcaseBusiness className="h-5 w-5" /></span><span className="status-chip">{project.status === "active" ? "פעיל" : project.status === "paused" ? "מושהה" : "בהכנה"}</span></div><h3 className="font-semibold group-hover:text-[var(--color-brand-blue)]">{project.name}</h3><p className="mt-1 min-h-5 text-xs text-neutral-500">{project.address || "כתובת טרם הוזנה"}</p><span className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-neutral-500 group-hover:text-[var(--color-brand-blue)]">פתח סביבת פרויקט <ArrowLeft className="h-3.5 w-3.5" /></span></CardContent></Card></Link>)}{!projects?.length && !unavailable && <Card><CardContent className="p-6 text-sm text-neutral-500">אין עדיין פרויקטים פעילים.</CardContent></Card>}</div></section>
+  </div>;
 }
 
-function NextAction({
-  href,
-  icon: Icon,
-  title,
-  description,
-}: {
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="rounded-lg border border-neutral-200 p-4 hover:border-[var(--color-brand-yellow)] hover:bg-[var(--color-brand-yellow)]/10 transition-colors"
-    >
-      <Icon className="h-5 w-5 text-[var(--color-brand-blue)] mb-3" />
-      <div className="font-semibold text-[var(--color-brand-dark)]">{title}</div>
-      <p className="text-xs text-neutral-600 mt-1">{description}</p>
-    </Link>
-  );
-}
-
-function EmptyHint({
-  text,
-  href,
-  action,
-}: {
-  text: string;
-  href: string;
-  action: string;
-}) {
-  return (
-    <div className="rounded-lg border border-dashed border-neutral-300 p-5 text-center">
-      <p className="text-sm text-neutral-600 mb-3">{text}</p>
-      <Link href={href}>
-        <Button variant="outline" size="sm">
-          <Plus className="h-4 w-4" />
-          {action}
-        </Button>
-      </Link>
-    </div>
-  );
-}
-
-function firstRelation<T>(value: T | T[] | null | undefined): T | null {
-  if (Array.isArray(value)) return value[0] || null;
-  return value || null;
-}
+function HeroMetric({ icon: Icon, label, value, tone }: { icon: typeof AlertTriangle; label: string; value: number; tone?: "yellow" }) { return <div className="rounded-xl border border-white/10 bg-white/[.07] p-3 backdrop-blur"><div className="flex items-center gap-2 text-xs text-neutral-300"><Icon className={`h-4 w-4 ${tone ? "text-[var(--color-brand-yellow)]" : "text-sky-300"}`} />{label}</div><strong className="mt-2 block text-2xl">{value}</strong></div>; }
+function QuickAction({ href, icon: Icon, title, text }: { href: string; icon: typeof Camera; title: string; text: string }) { return <Link href={href} className="group flex gap-3 rounded-xl border border-neutral-200 p-4 transition-colors hover:border-[var(--color-brand-blue)]/40 hover:bg-sky-50/40"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-neutral-100 text-neutral-700 group-hover:bg-[var(--color-brand-blue)] group-hover:text-white"><Icon className="h-5 w-5" /></span><div><strong className="block text-sm">{title}</strong><span className="mt-1 block text-xs leading-5 text-neutral-500">{text}</span></div></Link>; }
+function uniqueTasks(tasks: Task[]) { return Array.from(new Map(tasks.map((task) => [task.id, task])).values()); }
+function first(value: ProjectRelation) { return Array.isArray(value) ? value[0] || null : value; }
+function formatDate(value: string) { return new Intl.DateTimeFormat("he-IL", { day: "2-digit", month: "2-digit" }).format(new Date(`${value}T00:00:00`)); }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -178,6 +178,15 @@ export function TasksManager({
   const [savingTask, setSavingTask] = useState(false);
   const [savingCommentId, setSavingCommentId] = useState<string | null>(null);
   const [commentDrafts, setCommentDrafts] = useState<Record<string, CommentDraft>>({});
+
+  useEffect(() => {
+    const taskId = new URLSearchParams(window.location.search).get("task");
+    if (!taskId) return;
+    window.requestAnimationFrame(() => {
+      setExpandedTasks((current) => new Set(current).add(taskId));
+      document.getElementById(`task-${taskId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const [newTask, setNewTask] = useState<NewTaskFormState>({
     title: "",
@@ -825,7 +834,7 @@ ${link}
                   const commentDraft = commentDrafts[task.id] || { body: "", files: [] };
 
                   return (
-                    <div key={task.id} className="border-t border-neutral-100 first:border-0">
+                    <div id={`task-${task.id}`} key={task.id} className="scroll-mt-24 border-t border-neutral-100 first:border-0 target:bg-amber-50/50">
                       <div className="p-3 flex items-center gap-3">
                         <button
                           onClick={() => toggleExpand(task.id)}
