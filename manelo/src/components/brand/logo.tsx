@@ -2,6 +2,7 @@ import {
   APP_BRAND_NAME,
   APP_LOGO_FULL,
 } from "@/lib/brand";
+import Image from "next/image";
 import { MenloAppIcon } from "@/components/brand/menlo-app-icon";
 import { cn } from "@/lib/utils";
 
@@ -39,13 +40,14 @@ export function Logo({ variant = "full", size = 64, className }: LogoProps) {
       className={cn("inline-flex items-center", className)}
       style={{ width, height }}
     >
-      <img
+      <Image
         src={APP_LOGO_FULL}
         alt={APP_BRAND_NAME}
         width={width}
         height={height}
         className="h-full w-full object-contain"
         draggable={false}
+        unoptimized
       />
     </div>
   );

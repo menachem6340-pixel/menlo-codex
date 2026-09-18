@@ -34,48 +34,79 @@ export function PublicTaskUpdater({ token, currentStatus, currentProgress, check
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  async function updateStatus(newStatus: string) {
-    setStatus(newStatus);
-    await fetch(`/api/tasks/public/${token}/update`, {
+  async function post(path: string, body: Record<string, unknown>) {
+    setErrorMessage(null);
+    const response = await fetch(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify(body),
     });
-    setSavedMessage("הסטטוס נשמר ✓");
-    setTimeout(() => setSavedMessage(null), 2000);
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) throw new Error(payload.error || "לא ניתן היה לשמור את העדכון");
+  }
+
+  async function updateStatus(newStatus: string) {
+    const previous = status;
+    setStatus(newStatus);
+    setSaving(true);
+    try {
+      await post(`/api/tasks/public/${token}/update`, { status: newStatus });
+      setSavedMessage("הסטטוס נשמר וסונכרן");
+      setTimeout(() => setSavedMessage(null), 2500);
+    } catch (error) {
+      setStatus(previous);
+      setErrorMessage(error instanceof Error ? error.message : "השמירה נכשלה");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function updateProgress(p: number) {
+    const previous = progress;
     setProgress(p);
-    await fetch(`/api/tasks/public/${token}/update`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ progress_pct: p }),
-    });
+    setSaving(true);
+    try {
+      await post(`/api/tasks/public/${token}/update`, { progress_pct: p });
+      setSavedMessage("ההתקדמות נשמרה וסונכרנה");
+      setTimeout(() => setSavedMessage(null), 2500);
+    } catch (error) {
+      setProgress(previous);
+      setErrorMessage(error instanceof Error ? error.message : "השמירה נכשלה");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function toggleChecklist(itemId: string, currentDone: boolean) {
     setChecklist((prev) => prev.map((c) => (c.id === itemId ? { ...c, is_done: !currentDone } : c)));
-    await fetch(`/api/tasks/public/${token}/checklist`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item_id: itemId, is_done: !currentDone }),
-    });
+    setSaving(true);
+    try {
+      await post(`/api/tasks/public/${token}/checklist`, { item_id: itemId, is_done: !currentDone });
+      setSavedMessage("רשימת הבדיקה סונכרנה");
+      setTimeout(() => setSavedMessage(null), 2500);
+    } catch (error) {
+      setChecklist((prev) => prev.map((c) => (c.id === itemId ? { ...c, is_done: currentDone } : c)));
+      setErrorMessage(error instanceof Error ? error.message : "השמירה נכשלה");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function addComment() {
     if (!comment.trim() || !name.trim()) return;
     setSaving(true);
-    await fetch(`/api/tasks/public/${token}/comment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body: comment, author_name: name }),
-    });
-    setComment("");
-    setSaving(false);
-    setSavedMessage("ההערה נשלחה ✓");
-    setTimeout(() => setSavedMessage(null), 2000);
+    try {
+      await post(`/api/tasks/public/${token}/comment`, { body: comment, author_name: name });
+      setComment("");
+      setSavedMessage("ההערה נשלחה וסונכרנה");
+      setTimeout(() => setSavedMessage(null), 2500);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "שליחת ההערה נכשלה");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -88,6 +119,7 @@ export function PublicTaskUpdater({ token, currentStatus, currentProgress, check
             <button
               key={opt.value}
               onClick={() => updateStatus(opt.value)}
+              disabled={saving}
               className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
                 status === opt.value
                   ? "border-[var(--color-brand-yellow)] bg-[var(--color-brand-yellow)]/20"
@@ -129,6 +161,7 @@ export function PublicTaskUpdater({ token, currentStatus, currentProgress, check
               <button
                 key={item.id}
                 onClick={() => toggleChecklist(item.id, item.is_done)}
+                disabled={saving}
                 className="w-full flex items-center gap-2 text-sm hover:bg-white rounded p-1.5 text-right"
               >
                 {item.is_done ? (
@@ -166,7 +199,12 @@ export function PublicTaskUpdater({ token, currentStatus, currentProgress, check
       </div>
 
       {savedMessage && (
-        <div className="text-center text-sm text-green-600 font-medium">{savedMessage}</div>
+        <div role="status" className="rounded-lg border border-green-200 bg-green-50 p-3 text-center text-sm font-medium text-green-700">{savedMessage}</div>
+      )}
+      {errorMessage && (
+        <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-center text-sm font-medium text-red-700">
+          {errorMessage}. אפשר לנסות שוב; המצב הקודם נשמר במסך.
+        </div>
       )}
     </div>
   );

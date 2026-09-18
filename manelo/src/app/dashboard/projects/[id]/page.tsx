@@ -15,6 +15,7 @@ import {
   ClipboardList,
   FileText,
   ListTodo,
+  Layers3,
   MapPin,
   Phone,
   Upload,
@@ -111,12 +112,20 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         title={project.name}
         description={`סטטוס: ${projectStatusLabels[project.status] || project.status}`}
         action={
-          <Link href="/dashboard/projects">
-            <Button variant="outline" size="sm">
-              <ArrowRight className="h-4 w-4" />
-              חזרה לפרויקטים
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href={`/dashboard/projects/${id}/control`}>
+              <Button size="sm">
+                <Layers3 className="h-4 w-4" />
+                מרכז בקרת פרויקט
+              </Button>
+            </Link>
+            <Link href="/dashboard/projects">
+              <Button variant="outline" size="sm">
+                <ArrowRight className="h-4 w-4" />
+                חזרה לפרויקטים
+              </Button>
+            </Link>
+          </div>
         }
       />
 

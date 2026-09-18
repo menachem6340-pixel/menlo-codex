@@ -24,7 +24,7 @@ export function InstallAppButton({ className, compact = false }: InstallAppButto
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
-    setIsStandalone(standalone);
+    const frame = window.requestAnimationFrame(() => setIsStandalone(standalone));
 
     const onBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
@@ -41,6 +41,7 @@ export function InstallAppButton({ className, compact = false }: InstallAppButto
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
+      window.cancelAnimationFrame(frame);
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };

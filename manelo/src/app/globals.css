@@ -7,10 +7,10 @@
   --color-brand-blue: #2B7FBF;
   --color-brand-blue-dark: #1F6396;
   --color-brand-green: #1FA890;
-  --color-brand-dark: #3A3A3A;
+  --color-brand-dark: #252B30;
 
   /* Semantic */
-  --color-background: #FAFAFA;
+  --color-background: #F5F4F0;
   --color-foreground: #1A1A1A;
   --color-card: #FFFFFF;
   --color-border: #E5E5E5;
@@ -26,9 +26,66 @@ html {
 }
 
 body {
-  background: var(--color-background);
+  background:
+    radial-gradient(circle at 12% -10%, rgb(43 127 191 / 8%), transparent 32rem),
+    var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-brand-yellow) 55%, white);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: .25rem;
+  color: var(--color-brand-blue);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.control-section {
+  border: 1px solid rgb(229 229 229);
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 92%);
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  box-shadow: 0 18px 50px -38px rgb(37 43 48 / 55%);
+}
+
+.control-section > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.control-section > header h2 { font-size: 1.35rem; font-weight: 750; color: var(--color-brand-dark); }
+.control-section > header p { max-width: 34rem; color: #737373; font-size: .875rem; }
+
+.field-control {
+  min-height: 2.75rem;
+  width: 100%;
+  border: 1px solid #d4d4d4;
+  border-radius: .75rem;
+  background: white;
+  padding: .65rem .8rem;
+  font-size: .9rem;
+}
+.field-control:focus { border-color: var(--color-brand-blue); outline: 3px solid rgb(43 127 191 / 12%); }
+
+.area-tile { display: flex; gap: .75rem; align-items: center; border: 1px solid #e5e5e5; border-radius: .9rem; padding: 1rem; background: #fafafa; color: var(--color-brand-blue); }
+.area-tile strong { display: block; color: var(--color-brand-dark); }
+.area-tile span { display: block; margin-top: .15rem; font-size: .72rem; color: #737373; }
+
+.status-chip { display: inline-flex; align-items: center; gap: .3rem; border-radius: 999px; background: #f5f5f5; color: #525252; padding: .35rem .65rem; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.status-chip-success { background: #ecfdf5; color: #047857; }
+
+@media (max-width: 640px) {
+  .control-section > header { align-items: start; flex-direction: column; }
 }
 
 /* Number/date formatting in RTL context */
